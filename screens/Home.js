@@ -7,7 +7,7 @@ export default function Home({ seconds }) {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pomodoreo</Text>
+      <Text style={styles.title}>Pomodoreo Menu</Text>
       <View style={styles.menu}>
         <TouchableOpacity onPress={() => navigation.navigate("Stopwatch")}>
           <View style={styles.menubutton}>
@@ -40,6 +40,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 36,
     marginLeft: 20,
+    textAlign: 'center',
+    color: "#444"
   },
   menubutton: {
     borderRadius: 30,

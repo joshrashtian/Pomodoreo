@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-ico";
 
 let toggletext = "Activate Stopwatch";
 
@@ -47,7 +48,7 @@ export default function Stopwatch() {
     <View style={styles.container}>
     <TouchableOpacity onPress={() => navigation.navigate('Home')}>
       <View style={styles.back}>
-        <Text>Back</Text>
+        <Icon name="back-2" group="mingcute-tiny-bold-filled"/>
       </View>
     </TouchableOpacity>
       <Text style={styles.clock}>
@@ -97,6 +98,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   back: {
-
+    position: 'absolute',
+    marginTop: -300,
+    marginLeft: -170,
+    padding: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
   }
 });
