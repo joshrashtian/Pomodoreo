@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 
+
 export default function Home({ seconds }) {
   const navigation = useNavigation();
   return (
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 36,
+    fontFamily: 'Nexa',
     marginLeft: 20,
     textAlign: 'center',
     color: "#444"

@@ -1,38 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useState, useEffect, useCallback } from 'react';
-import Navigation from './navigation';
-import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useState, useEffect, useCallback } from "react";
+import { useFonts } from "@use-expo/font"
+import Navigation from "./navigation";
+import * as SplashScreen from "expo-splash-screen";
+import * as Font from "expo-font";
+
 
 export default function App() {
-  const [appReady , setAppReady] = useState(false);
+  const [fontsLoaded] = useFonts({
+    'Nexa': require("./assets/fonts/NexaHeavy.ttf"),
+  });
 
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await {getFonts};
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppReady(true);
-      }
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
     }
+  }, [fontsLoaded]);
 
-    prepare();
-  }, []);
+  if (!fontsLoaded) {
+    return null;
+  }
 
-   const getFonts = Font.loadAsync({
-
-   })
-
-   const onLayoutRootView = useCallback(async ()=> {
-    
-   })
-
-
-  return (
-    <Navigation />
-  )
+  return <Navigation />;
 }
