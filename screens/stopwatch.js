@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  SafeAreaView,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
@@ -30,13 +37,11 @@ export default function Stopwatch() {
     }
   };
 
-
-
-  const setBackgroundColor = (color, modal) => {
-    if(color === "gray") { 
-    setbcolor("#bbb")
+  const setBackgroundColor = (color) => {
+    if (color === "gray") {
+      setbcolor("#bbb");
     }
-  }
+  };
 
   useEffect(() => {
     if (isActive) {
@@ -57,73 +62,107 @@ export default function Stopwatch() {
   const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
 
   return (
-    <View style={[styles.container, { backgroundColor: bcolor}]}>
-    <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-      <View style={styles.back}>
-        <Icon name="back-2" group="mingcute-tiny-bold-filled"/>
+    <SafeAreaView style={[styles.container, { backgroundColor: bcolor }]}>
+      <View style={styles.toprow}>
+        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+          <View style={styles.back}>
+            <Icon name="back-2" group="mingcute-tiny-bold-filled" />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setsettingsOpen(true)}>
+          <View style={styles.back}>
+            <Icon name="settings" group="mingcute-tiny-bold-filled" />
+          </View>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
-      <Text style={styles.clock}>
-        {displayMinutes}:{displaySeconds}
-      </Text>
-      {useEffect(() => {
-        if (isActive) {
-          return () => {
-            <Text style={{ marginTop: 30 }}>
-              Total Seconds Passed: {totalseconds}
-            </Text>;
-          };
-        }
-      }, [seconds])}
-      <Modal
-      visible={settingsOpen} transparent={true}>
-        <View style={{ marginTop: 40, backgroundColor: '#FFF', flex: 1}}>
-          <Text>Testing</Text>
-          <TouchableOpacity onPress={() => setsettingsOpen(false)}>
-            <Text>Settings Off</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-      <TouchableOpacity onPress={toggle}>
-        <View style={styles.toggle}>
-          <Text style={styles.toggletext}>{toggletext}</Text>
-        </View>
-      </TouchableOpacity>
-      <StatusBar style="light" />
-    </View>
+      <View style={styles.container2}>
+        <Text style={styles.clock}>
+          {displayMinutes}:{displaySeconds}
+        </Text>
+        <Modal visible={settingsOpen} transparent={true}>
+          <View style={modalstyles.container}>
+            <View style={{ marginTop: 20,  marginHorizontal: 16}}>
+            <Text style={{ fontFamily: 'Nexa', fontSize: 30}}>Settings</Text>
+            <TouchableOpacity onPress={() => setsettingsOpen(false)}>
+              <View style={modalstyles.backbutton}>
+                <Text style={{ fontFamily: 'Nexa', fontSize: 24, color: '#FFF'}}>Return</Text>
+              </View>
+            </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <StatusBar style="light" />
+      </View>
+      <View style={styles.bottomcontainer}>
+        <TouchableOpacity onPress={toggle}>
+          <View style={styles.toggle}>
+            <Text style={styles.toggletext}>{toggletext}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  container2: {
     alignItems: "center",
     justifyContent: "center",
+    flex: 1,
   },
   clock: {
     color: "#FFF",
     fontSize: 80,
-    fontFamily: 'NexaLight',
+    fontFamily: "NexaLight",
   },
   toggle: {
-    position: "absolute",
-    alignSelf: "center",
-    marginTop: 200,
     padding: 20,
     paddingHorizontal: 30,
     borderRadius: 40,
     backgroundColor: "#EEE",
   },
   toggletext: {
-    fontFamily: 'Nexa',
+    fontFamily: "Nexa",
     fontSize: 20,
   },
+  bottomcontainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  toprow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
   back: {
-    position: 'absolute',
-    marginTop: -300,
-    marginLeft: -170,
     padding: 10,
-    backgroundColor: '#FFF',
+    width: 40,
+    marginHorizontal: 15,
+    marginTop: 10,
+    backgroundColor: "#FFF",
     borderRadius: 20,
-  }
+  },
+});
+
+const modalstyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 80,
+    backgroundColor: "#fff",
+    borderRadius: 30,
+    shadowOffset: 0,
+    shadowOpacity: "100%",
+  },
+  backbutton: {
+    padding: 16,
+    paddingHorizontal: 24,
+    backgroundColor: '#00F',
+    marginHorizontal: 30,
+    alignSelf: 'center',
+    borderRadius: 30,
+  },
 });
