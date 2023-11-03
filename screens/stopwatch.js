@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
@@ -13,18 +13,30 @@ export default function Stopwatch() {
   const [minutes, setMinutes] = useState(0);
   const [totalseconds, setTotalSeconds] = useState(0);
   const [isActive, setActive] = useState(false);
+  const [settingsOpen, setsettingsOpen] = useState(false);
+
+  const [bcolor, setbcolor] = useState("#823");
 
   const toggle = () => {
     if (isActive) {
       setActive(false);
-      toggletext = "Turn On";
+      toggletext = "Resume";
     } else {
       setActive(true);
       setSeconds(seconds + 1);
       setTotalSeconds(totalseconds + 1);
-      toggletext = "Turn Off";
+      setBackgroundColor("gray");
+      toggletext = "Pause";
     }
   };
+
+
+
+  const setBackgroundColor = (color, modal) => {
+    if(color === "gray") { 
+    setbcolor("#bbb")
+    }
+  }
 
   useEffect(() => {
     if (isActive) {
@@ -45,7 +57,7 @@ export default function Stopwatch() {
   const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: bcolor}]}>
     <TouchableOpacity onPress={() => navigation.navigate('Home')}>
       <View style={styles.back}>
         <Icon name="back-2" group="mingcute-tiny-bold-filled"/>
@@ -63,6 +75,15 @@ export default function Stopwatch() {
           };
         }
       }, [seconds])}
+      <Modal
+      visible={settingsOpen} transparent={true}>
+        <View style={{ marginTop: 40, backgroundColor: '#FFF', flex: 1}}>
+          <Text>Testing</Text>
+          <TouchableOpacity onPress={() => setsettingsOpen(false)}>
+            <Text>Settings Off</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
       <TouchableOpacity onPress={toggle}>
         <View style={styles.toggle}>
           <Text style={styles.toggletext}>{toggletext}</Text>
@@ -76,25 +97,25 @@ export default function Stopwatch() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#37526b",
     alignItems: "center",
     justifyContent: "center",
   },
   clock: {
     color: "#FFF",
     fontSize: 80,
-    fontWeight: "500",
+    fontFamily: 'NexaLight',
   },
   toggle: {
     position: "absolute",
     alignSelf: "center",
     marginTop: 200,
-    padding: 30,
+    padding: 20,
+    paddingHorizontal: 30,
     borderRadius: 40,
     backgroundColor: "#EEE",
   },
   toggletext: {
-    fontWeight: "700",
+    fontFamily: 'Nexa',
     fontSize: 20,
   },
   back: {

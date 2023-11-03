@@ -10,6 +10,8 @@ import * as Font from "expo-font";
 export default function App() {
   const [fontsLoaded] = useFonts({
     'Nexa': require("./assets/fonts/NexaHeavy.ttf"),
+    'NexaLight': require("./assets/fonts/Nexa-ExtraLight.ttf"),
+    'Granita': require("./assets/fonts/Gratina.otf"),
   });
 
   const onLayoutRootView = useCallback(async () => {

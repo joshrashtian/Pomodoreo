@@ -8,7 +8,7 @@ export default function Home({ seconds }) {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pomodoreo Menu</Text>
+      <Text style={styles.title}>Pomodoreo</Text>
       <View style={styles.menu}>
         <TouchableOpacity onPress={() => navigation.navigate("Stopwatch")}>
           <View style={styles.menubutton}>
@@ -19,7 +19,7 @@ export default function Home({ seconds }) {
               group="mingcute-tiny-bold-filled"
             />
             <Text
-              style={{ fontWeight: "300", fontSize: 30, marginLeft: 14, marginTop: 4, color: '#555'}}
+              style={{ fontFamily: 'NexaLight',fontWeight: "300", fontSize: 30, marginLeft: 14, marginTop: 4, color: '#555'}}
             >
               Stopwatch
             </Text>
@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 36,
     fontFamily: 'Nexa',
-    marginLeft: 20,
     textAlign: 'center',
     color: "#444"
   },
