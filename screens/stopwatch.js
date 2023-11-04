@@ -10,6 +10,7 @@ import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
+import { Colors } from "../components/colors";
 
 let toggletext = "Activate Stopwatch";
 
@@ -21,6 +22,7 @@ export default function Stopwatch() {
   const [totalseconds, setTotalSeconds] = useState(0);
   const [isActive, setActive] = useState(false);
   const [settingsOpen, setsettingsOpen] = useState(false);
+  const [dynamiccolor, setdynamiccolor] = useState(false);
 
   const [bcolor, setbcolor] = useState("#823");
 
@@ -32,15 +34,12 @@ export default function Stopwatch() {
       setActive(true);
       setSeconds(seconds + 1);
       setTotalSeconds(totalseconds + 1);
-      setBackgroundColor("gray");
       toggletext = "Pause";
     }
   };
 
   const setBackgroundColor = (color) => {
-    if (color === "gray") {
-      setbcolor("#bbb");
-    }
+      setbcolor(color);
   };
 
   useEffect(() => {
@@ -81,13 +80,43 @@ export default function Stopwatch() {
         </Text>
         <Modal visible={settingsOpen} transparent={true}>
           <View style={modalstyles.container}>
-            <View style={{ marginTop: 20,  marginHorizontal: 16}}>
-            <Text style={{ fontFamily: 'Nexa', fontSize: 30}}>Settings</Text>
-            <TouchableOpacity onPress={() => setsettingsOpen(false)}>
-              <View style={modalstyles.backbutton}>
-                <Text style={{ fontFamily: 'Nexa', fontSize: 24, color: '#FFF'}}>Return</Text>
+            <View style={{ marginTop: 20, marginHorizontal: 16 }}>
+              <Text style={{ fontFamily: "Nexa", fontSize: 30 }}>Settings</Text>
+              <Text
+                style={{ fontFamily: "NexaLight", fontSize: 26, marginTop: 20 }}
+              >
+                Background Color
+              </Text>
+              <View style={modalstyles.colorrow}>
+                {Colors.map((color, key) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => setBackgroundColor(color.colorId)}
+                    >
+                      <View
+                        style={[
+                          modalstyles.colors,
+                          {
+                            backgroundColor: color.colorId,
+                            color: (color.light = 1 ? "#FFF" : "#000"),
+                          },
+                        ]}
+                      >
+                        <Text>{color.colorName}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => setsettingsOpen(false)}>
+                <View style={modalstyles.backbutton}>
+                  <Text
+                    style={{ fontFamily: "Nexa", fontSize: 24, color: "#FFF" }}
+                  >
+                    Return
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -160,9 +189,18 @@ const modalstyles = StyleSheet.create({
   backbutton: {
     padding: 16,
     paddingHorizontal: 24,
-    backgroundColor: '#00F',
+    backgroundColor: "#00F",
     marginHorizontal: 30,
-    alignSelf: 'center',
+    alignSelf: "center",
     borderRadius: 30,
+  },
+  colorrow: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  colors: {
+    padding: 10,
+    borderRadius: 20,
+    marginHorizontal: 5,
   },
 });
