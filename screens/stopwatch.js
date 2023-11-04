@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Modal,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
@@ -88,6 +89,7 @@ export default function Stopwatch() {
                 Background Color
               </Text>
               <View style={modalstyles.colorrow}>
+                <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator="false">
                 {Colors.map((color, key) => {
                   return (
                     <TouchableOpacity
@@ -98,20 +100,20 @@ export default function Stopwatch() {
                           modalstyles.colors,
                           {
                             backgroundColor: color.colorId,
-                            color: (color.light = 1 ? "#FFF" : "#000"),
                           },
                         ]}
                       >
-                        <Text>{color.colorName}</Text>
+                        <Text style={{color: (color.light = 1 ? "#FFF" : "#000"), fontFamily: 'Nexa'}}>{color.colorName}</Text>
                       </View>
                     </TouchableOpacity>
                   );
                 })}
+                </ScrollView>
               </View>
               <TouchableOpacity onPress={() => setsettingsOpen(false)}>
                 <View style={modalstyles.backbutton}>
                   <Text
-                    style={{ fontFamily: "Nexa", fontSize: 24, color: "#FFF" }}
+                    style={{ fontFamily: "Nexa", fontSize: 24, color: "#FFF", marginTop: 20 }}
                   >
                     Return
                   </Text>
@@ -187,20 +189,22 @@ const modalstyles = StyleSheet.create({
     shadowOpacity: "100%",
   },
   backbutton: {
-    padding: 16,
     paddingHorizontal: 24,
     backgroundColor: "#00F",
     marginHorizontal: 30,
     alignSelf: "center",
+    justifyContent: 'center',
     borderRadius: 30,
   },
   colorrow: {
-    flexDirection: "row",
     justifyContent: "space-evenly",
+    flexDirection: 'row'
   },
   colors: {
     padding: 10,
     borderRadius: 20,
-    marginHorizontal: 5,
+    width: 90,
+    marginHorizontal: 3,
+    alignItems: 'center',
   },
 });
