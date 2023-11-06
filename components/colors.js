@@ -26,7 +26,7 @@ export const Colors = [
     {
         id: '4',
         colorName: 'Mystery',
-        colorId: '#3FA',
+        colorId: 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')',
         light: 0,
     }
 ]

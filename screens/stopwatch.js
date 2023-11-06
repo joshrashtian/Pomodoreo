@@ -13,8 +13,6 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 import { Colors } from "../components/colors";
 
-let toggletext = "Activate Stopwatch";
-
 export default function Stopwatch() {
   const navigation = useNavigation();
 
@@ -23,24 +21,14 @@ export default function Stopwatch() {
   const [totalseconds, setTotalSeconds] = useState(0);
   const [isActive, setActive] = useState(false);
   const [settingsOpen, setsettingsOpen] = useState(false);
+  const [bottomRow, setbottomRow] = useState(true);
+  const [selectedId, setselectedId] = useState(null);
   const [dynamiccolor, setdynamiccolor] = useState(false);
 
   const [bcolor, setbcolor] = useState("#823");
 
-  const toggle = () => {
-    if (isActive) {
-      setActive(false);
-      toggletext = "Resume";
-    } else {
-      setActive(true);
-      setSeconds(seconds + 1);
-      setTotalSeconds(totalseconds + 1);
-      toggletext = "Pause";
-    }
-  };
-
   const setBackgroundColor = (color) => {
-      setbcolor(color);
+    setbcolor(color);
   };
 
   useEffect(() => {
@@ -63,6 +51,7 @@ export default function Stopwatch() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bcolor }]}>
+      { bottomRow == true ? 
       <View style={styles.toprow}>
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <View style={styles.back}>
@@ -75,6 +64,7 @@ export default function Stopwatch() {
           </View>
         </TouchableOpacity>
       </View>
+      : null}
       <View style={styles.container2}>
         <Text style={styles.clock}>
           {displayMinutes}:{displaySeconds}
@@ -89,33 +79,51 @@ export default function Stopwatch() {
                 Background Color
               </Text>
               <View style={modalstyles.colorrow}>
-                <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator="false">
-                {Colors.map((color, key) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => setBackgroundColor(color.colorId)}
-                    >
-                      <View
-                        style={[
-                          modalstyles.colors,
-                          {
-                            backgroundColor: color.colorId,
-                          },
-                        ]}
+                <ScrollView
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator="false"
+                >
+                  {Colors.map((color, index) => {
+                    return (
+                      <TouchableOpacity
+                        onPress={() => setBackgroundColor(color.colorId) + setselectedId(color.id)}
+                        key={index}
                       >
-                        <Text style={{color: (color.light = 1 ? "#FFF" : "#000"), fontFamily: 'Nexa'}}>{color.colorName}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
+                        <View
+                          style={[
+                            modalstyles.colors,
+                            {
+                              backgroundColor: color.colorId,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={{
+                              color: (color.light = 1 ? "#FFF" : "#000"),
+                              fontFamily: "Nexa",
+                            }}
+                          >
+                            {color.colorName}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </ScrollView>
               </View>
+              <Text style={{marginTop: 10, fontFamily: 'NexaLight'}}>* Each Mystery Color is Randomized Every Launch!</Text>
               <TouchableOpacity onPress={() => setsettingsOpen(false)}>
                 <View style={modalstyles.backbutton}>
                   <Text
-                    style={{ fontFamily: "Nexa", fontSize: 24, color: "#FFF", marginTop: 20 }}
+                    style={{
+                      fontFamily: "Nexa",
+                      fontSize: 24,
+                      color: "#FFF",
+                      justifyContent: 'center',
+                    }}
                   >
-                    Return
+                    Back
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -124,13 +132,49 @@ export default function Stopwatch() {
         </Modal>
         <StatusBar style="light" />
       </View>
-      <View style={styles.bottomcontainer}>
-        <TouchableOpacity onPress={toggle}>
-          <View style={styles.toggle}>
-            <Text style={styles.toggletext}>{toggletext}</Text>
+
+      {bottomRow == true ? (
+        <View
+          style={[
+            styles.bottomcontainer,
+            { backgroundColor: bcolor == "#DDD" ? "#FFF" : "#EEE" },
+          ]}
+        >
+          <View style={{ flexDirection: "row", marginBottom: -10 }}>
+            <TouchableOpacity
+              onPress={() => {
+                isActive == true
+                  ? setActive(false)
+                  : setActive(true) + setSeconds(seconds + 1);
+              }}
+            >
+              <View
+                style={[
+                  styles.toggle,
+                  { backgroundColor: bcolor == "#DDD" ? "#FFF" : "#EEE" },
+                ]}
+              >
+                {isActive == true ? (
+                  <Icon name="pause" group="ui-interface" />
+                ) : (
+                  <Icon name="play" group="ui-interface" />
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={() => setbottomRow(false)}>
+            <View style={[styles.toggle]}>
+              <Icon name="down" group="mingcute-tiny-bold-filled" />
+            </View>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity onPress={() => setbottomRow(true)}>
+          <View style={{ alignSelf: "center", marginBottom: -10 }}>
+            <Icon name="up" group="mingcute-tiny-bold-filled" />
           </View>
         </TouchableOpacity>
-      </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -150,10 +194,22 @@ const styles = StyleSheet.create({
     fontFamily: "NexaLight",
   },
   toggle: {
-    padding: 20,
+    padding: 30,
     paddingHorizontal: 30,
-    borderRadius: 40,
-    backgroundColor: "#EEE",
+    borderRadius: 80,
+    shadowOpacity: "90%",
+    shadowOffset: {
+      height: 2,
+    },
+    shadowColor: "#aaa",
+  },
+  downarrow: {
+    padding: 0,
+    shadowOpacity: "90%",
+    shadowOffset: {
+      height: 2,
+    },
+    shadowColor: "#aaa",
   },
   toggletext: {
     fontFamily: "Nexa",
@@ -162,8 +218,16 @@ const styles = StyleSheet.create({
   bottomcontainer: {
     justifyContent: "center",
     alignItems: "center",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderRadius: 20,
+
+    height: 100,
+    marginHorizontal: 15,
+    marginBottom: -10,
+    shadowOpacity: "90%",
+    shadowOffset: {
+      height: 2,
+    },
+    shadowColor: "#999",
   },
   toprow: {
     flexDirection: "row",
@@ -185,26 +249,31 @@ const modalstyles = StyleSheet.create({
     marginTop: 80,
     backgroundColor: "#fff",
     borderRadius: 30,
-    shadowOffset: 0,
+    shadowOffset: {
+      height: 1,
+    },
     shadowOpacity: "100%",
   },
   backbutton: {
-    paddingHorizontal: 24,
+    padding: 10,
+    paddingHorizontal: 25,
     backgroundColor: "#00F",
     marginHorizontal: 30,
     alignSelf: "center",
-    justifyContent: 'center',
+    justifyContent: "center",
     borderRadius: 30,
+    marginTop: 20,
   },
   colorrow: {
+    marginTop: 10,
     justifyContent: "space-evenly",
-    flexDirection: 'row'
+    flexDirection: "row",
   },
   colors: {
     padding: 10,
     borderRadius: 20,
-    width: 90,
+    width: 110,
     marginHorizontal: 3,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
