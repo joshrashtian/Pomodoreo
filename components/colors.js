@@ -1,4 +1,4 @@
-export const Colors = [
+export const Colors = (color) = [
     {
         id: '0',
         colorName: 'Light Grey',
@@ -23,10 +23,4 @@ export const Colors = [
         colorId: '#0A0',
         light: 0,
     },
-    {
-        id: '4',
-        colorName: 'Mystery',
-        colorId: 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')',
-        light: 0,
-    }
 ]

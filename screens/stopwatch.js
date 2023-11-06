@@ -12,6 +12,8 @@ import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 import { Colors } from "../components/colors";
+import Colorodo from "../components/Colorodo";
+import {AsyncStorage} from 'react-native';
 
 export default function Stopwatch() {
   const navigation = useNavigation();
@@ -24,8 +26,14 @@ export default function Stopwatch() {
   const [bottomRow, setbottomRow] = useState(true);
   const [selectedId, setselectedId] = useState(null);
   const [dynamiccolor, setdynamiccolor] = useState(false);
+  const [colorodo, setColorodo] = useState(false);
 
   const [bcolor, setbcolor] = useState("#823");
+
+  const handleOnReturn = (color) => {
+    setbcolor(color);
+    console.log(color);
+  }
 
   const setBackgroundColor = (color) => {
     setbcolor(color);
@@ -51,20 +59,20 @@ export default function Stopwatch() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bcolor }]}>
-      { bottomRow == true ? 
-      <View style={styles.toprow}>
-        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <View style={styles.back}>
-            <Icon name="back-2" group="mingcute-tiny-bold-filled" />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setsettingsOpen(true)}>
-          <View style={styles.back}>
-            <Icon name="settings" group="mingcute-tiny-bold-filled" />
-          </View>
-        </TouchableOpacity>
-      </View>
-      : null}
+      {bottomRow == true ? (
+        <View style={styles.toprow}>
+          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+            <View style={styles.back}>
+              <Icon name="back-2" group="mingcute-tiny-bold-filled" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setsettingsOpen(true)}>
+            <View style={styles.back}>
+              <Icon name="settings" group="mingcute-tiny-bold-filled" />
+            </View>
+          </TouchableOpacity>
+        </View>
+      ) : null}
       <View style={styles.container2}>
         <Text style={styles.clock}>
           {displayMinutes}:{displaySeconds}
@@ -87,7 +95,10 @@ export default function Stopwatch() {
                   {Colors.map((color, index) => {
                     return (
                       <TouchableOpacity
-                        onPress={() => setBackgroundColor(color.colorId) + setselectedId(color.id)}
+                        onPress={() =>
+                          setBackgroundColor(color.colorId) +
+                          setselectedId(color.id)
+                        }
                         key={index}
                       >
                         <View
@@ -112,7 +123,27 @@ export default function Stopwatch() {
                   })}
                 </ScrollView>
               </View>
-              <Text style={{marginTop: 10, fontFamily: 'NexaLight'}}>* Each Mystery Color is Randomized Every Launch!</Text>
+              <Text style={{ marginTop: 10, fontFamily: "NexaLight" }}>
+                * Each Mystery Color is Randomized Every Launch!
+              </Text>
+              <TouchableOpacity
+                onPress={() => setColorodo(true) + setsettingsOpen(false)}
+              >
+                <View
+                  style={[modalstyles.backbutton, { backgroundColor: "#555" }]}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "Nexa",
+                      fontSize: 24,
+                      color: "#FFF",
+                      justifyContent: "center",
+                    }}
+                  >
+                    Colorodo
+                  </Text>
+                </View>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => setsettingsOpen(false)}>
                 <View style={modalstyles.backbutton}>
                   <Text
@@ -120,7 +151,7 @@ export default function Stopwatch() {
                       fontFamily: "Nexa",
                       fontSize: 24,
                       color: "#FFF",
-                      justifyContent: 'center',
+                      justifyContent: "center",
                     }}
                   >
                     Back
@@ -128,6 +159,25 @@ export default function Stopwatch() {
                 </View>
               </TouchableOpacity>
             </View>
+          </View>
+        </Modal>
+        <Modal visible={colorodo} transparent={true} >
+          <View style={[modalstyles.container, {justifyContent: 'center' ,marginVertical: 160, marginTop: 160, marginHorizontal: 20}]}>
+          <Colorodo onSumbit={handleOnReturn}/>
+          <TouchableOpacity onPress={() => setColorodo(false) + setsettingsOpen(true) + setbottomRow(false)}>
+                <View style={[modalstyles.backbutton, {backgroundColor: '#444'}]}>
+                  <Text
+                    style={{
+                      fontFamily: "Nexa",
+                      fontSize: 24,
+                      color: "#FFF",
+                      justifyContent: "center",
+                    }}
+                  >
+                    Back
+                  </Text>
+                </View>
+              </TouchableOpacity>
           </View>
         </Modal>
         <StatusBar style="light" />
