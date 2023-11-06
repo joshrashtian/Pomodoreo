@@ -130,7 +130,7 @@ export default function Stopwatch() {
                 onPress={() => setColorodo(true) + setsettingsOpen(false)}
               >
                 <View
-                  style={[modalstyles.backbutton, { backgroundColor: "#555" }]}
+                  style={[modalstyles.backbutton, { backgroundColor: "#" + bcolor,shadowOffset: {height: 2}, shadowColor: '#AAA', shadowOpacity: '100%' }]}
                 >
                   <Text
                     style={{

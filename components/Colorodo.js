@@ -9,23 +9,26 @@ import React, { useState } from "react";
 import { ScrollView, Modal } from "react-native";
 
 export default function Colorodo({ onSumbit }) {
+  const [rmax, setrmax] = useState(255);
+  const [gmax, setgmax] = useState(255);
+  const [bmax, setbmax] = useState(255);
   const [prevcolor, setprevcolor] = useState(null);
   const [currentcolor, setcurrentcolor] = useState(
     "rgb(" +
-      Math.floor(Math.random() * 255) +
+      Math.floor(Math.random() * rmax) +
       "," +
-      Math.floor(Math.random() * 255) +
+      Math.floor(Math.random() * gmax) +
       "," +
-      Math.floor(Math.random() * 255) +
+      Math.floor(Math.random() * bmax) +
       ")"
   );
   const [upcomingcolor, setupcomingcolor] = useState(
     "rgb(" +
-      Math.floor(Math.random() * 255) +
+      Math.floor(Math.random() * rmax) +
       "," +
-      Math.floor(Math.random() * 255) +
+      Math.floor(Math.random() * gmax) +
       "," +
-      Math.floor(Math.random() * 255) +
+      Math.floor(Math.random() * bmax) +
       ")"
   );
   const [nummodal, setnummodal] = useState(true);
@@ -39,11 +42,11 @@ export default function Colorodo({ onSumbit }) {
     setcurrentcolor(upcomingcolor);
     setupcomingcolor(
       "rgb(" +
-        Math.floor(Math.random() * 255) +
+        Math.floor(Math.random() * rmax) +
         "," +
-        Math.floor(Math.random() * 255) +
+        Math.floor(Math.random() * gmax) +
         "," +
-        Math.floor(Math.random() * 255) +
+        Math.floor(Math.random() * bmax) +
         ")"
     );
   };
@@ -156,13 +159,35 @@ export default function Colorodo({ onSumbit }) {
               onChangeText={(text) => handleColorChange(text)}
             />
           </View>
+          <View style={styles.inputcontainer}>
+            <Text style={[styles.buttontext, {marginRight: 10}]}>
+              Narrow Max Value: 
+            </Text>
+            <TextInput
+              style={styles.textinput}
+              placeholder={"255"}
+              onChangeText={(text) => setrmax(text)}
+            />
+            <TextInput
+              style={styles.textinput}
+              placeholder={"255"}
+              onChangeText={(text) => setgmax(text)}
+            />
+            <TextInput
+              style={styles.textinput}
+              placeholder={"255"}
+              onChangeText={(text) => setbmax(text)}
+            />
+          </View>
           <TouchableOpacity
             onPress={() => {
               setnummodal(false);
             }}
           >
-            <View>
-              <Text>Minimize</Text>
+            <View style={[styles.button, {padding: 5, marginTop: 5}]}>
+              <Text style={[styles.buttontext,
+                { fontFamily: "Nexa", textAlign: "center" },
+              ]}>Minimize</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -217,8 +242,11 @@ const styles = StyleSheet.create({
   },
   textinput: {
     backgroundColor: "#EEE",
-    padding: 5,
+    padding: 0,
     borderRadius: 30,
+    fontFamily: 'NexaLight',
+    paddingHorizontal: 10,
+    marginRight: 5
   },
   inputcontainer: {
     flexDirection: 'row',
