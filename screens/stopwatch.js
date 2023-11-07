@@ -13,7 +13,8 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 import { Colors } from "../components/colors";
 import Colorodo from "../components/Colorodo";
-import {AsyncStorage} from 'react-native';
+import { AsyncStorage } from "react-native";
+import { fonts } from "../components/Fonts";
 
 export default function Stopwatch() {
   const navigation = useNavigation();
@@ -24,16 +25,19 @@ export default function Stopwatch() {
   const [isActive, setActive] = useState(false);
   const [settingsOpen, setsettingsOpen] = useState(false);
   const [bottomRow, setbottomRow] = useState(true);
+  const [musicOpen, setMusicOpen] = useState(true);
   const [selectedId, setselectedId] = useState(null);
   const [dynamiccolor, setdynamiccolor] = useState(false);
   const [colorodo, setColorodo] = useState(false);
+  const [clockfont, setclockfont] = useState("NexaLight");
+  const [selectedFont, setselected] = useState(null);
 
   const [bcolor, setbcolor] = useState("#823");
 
   const handleOnReturn = (color) => {
     setbcolor(color);
     console.log(color);
-  }
+  };
 
   const setBackgroundColor = (color) => {
     setbcolor(color);
@@ -68,13 +72,13 @@ export default function Stopwatch() {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setsettingsOpen(true)}>
             <View style={styles.back}>
-              <Icon name="settings" group="mingcute-tiny-bold-filled" />
+              <Icon name="menu" group="mingcute-tiny-bold-filled" />
             </View>
           </TouchableOpacity>
         </View>
       ) : null}
       <View style={styles.container2}>
-        <Text style={styles.clock}>
+        <Text style={[styles.clock, { fontFamily: clockfont }]}>
           {displayMinutes}:{displaySeconds}
         </Text>
         <Modal visible={settingsOpen} transparent={true}>
@@ -130,20 +134,76 @@ export default function Stopwatch() {
                 onPress={() => setColorodo(true) + setsettingsOpen(false)}
               >
                 <View
-                  style={[modalstyles.backbutton, { backgroundColor: "#" + bcolor,shadowOffset: {height: 2}, shadowColor: '#AAA', shadowOpacity: '100%' }]}
+                  style={[
+                    modalstyles.colorodobutton,
+                    {
+                      backgroundColor:
+                        "#" +
+                        Math.floor(Math.random() * 9) +
+                        Math.floor(Math.random() * 9) +
+                        Math.floor(Math.random() * 9),
+                    },
+                  ]}
                 >
+                  <Icon
+                    name="color-setting"
+                    group="sign-and-symbols"
+                    color="#FFF"
+                    width="25"
+                    height="25"
+                    style={{ marginRight: 10 }}
+                  />
                   <Text
                     style={{
                       fontFamily: "Nexa",
-                      fontSize: 24,
+                      fontSize: 30,
                       color: "#FFF",
-                      justifyContent: "center",
+                      fontFamily: "Gratina",
                     }}
                   >
                     Colorodo
                   </Text>
                 </View>
               </TouchableOpacity>
+              <Text
+                style={{ fontFamily: "NexaLight", fontSize: 26, marginTop: 20 }}
+              >
+                Clock Font
+              </Text>
+              <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator="false"
+              >
+                {fonts.map((font, index) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() =>
+                        setclockfont(font.fontname) + setselected(font.id)
+                      }
+                      key={index}
+                    >
+                      <View
+                        style={[
+                          modalstyles.fonts,
+                          {
+                            backgroundColor:
+                              font.fontname === clockfont ? "#DDD" : "#EEE",
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={{
+                            fontFamily: font.fontname,
+                          }}
+                        >
+                          {font.displayname}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
               <TouchableOpacity onPress={() => setsettingsOpen(false)}>
                 <View style={modalstyles.backbutton}>
                   <Text
@@ -161,28 +221,55 @@ export default function Stopwatch() {
             </View>
           </View>
         </Modal>
-        <Modal visible={colorodo} transparent={true} >
-          <View style={[modalstyles.container, {justifyContent: 'center' ,marginVertical: 160, marginTop: 160, marginHorizontal: 20}]}>
-          <Colorodo onSumbit={handleOnReturn}/>
-          <TouchableOpacity onPress={() => setColorodo(false) + setsettingsOpen(true) + setbottomRow(false)}>
-                <View style={[modalstyles.backbutton, {backgroundColor: '#444'}]}>
-                  <Text
-                    style={{
-                      fontFamily: "Nexa",
-                      fontSize: 24,
-                      color: "#FFF",
-                      justifyContent: "center",
-                    }}
-                  >
-                    Back
-                  </Text>
-                </View>
-              </TouchableOpacity>
+        <Modal visible={colorodo} transparent={true}>
+          <View
+            style={[
+              modalstyles.container,
+              {
+                justifyContent: "center",
+                marginVertical: 160,
+                marginTop: 160,
+                marginHorizontal: 20,
+              },
+            ]}
+          >
+            <Colorodo onSumbit={handleOnReturn} />
+            <TouchableOpacity
+              onPress={() =>
+                setColorodo(false) + setsettingsOpen(true) + setbottomRow(false)
+              }
+            >
+              <View
+                style={[modalstyles.backbutton, { backgroundColor: "#444" }]}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Nexa",
+                    fontSize: 24,
+                    color: "#FFF",
+                    justifyContent: "center",
+                  }}
+                >
+                  Back
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </Modal>
         <StatusBar style="light" />
       </View>
 
+      {musicOpen == true ? (
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View style={musicstyles.container}>
+            <TouchableOpacity>
+              <View style={musicstyles.musicbutton}>
+                <Text style={{fontFamily: 'Nexa', textAlign: 'center'}}>UNDER CONSTRUCTION</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : null}
       {bottomRow == true ? (
         <View
           style={[
@@ -191,6 +278,25 @@ export default function Stopwatch() {
           ]}
         >
           <View style={{ flexDirection: "row", marginBottom: -10 }}>
+            <TouchableOpacity
+              onPress={() => {
+                musicOpen == true ? setMusicOpen(false) : setMusicOpen(true);
+              }}
+            >
+              <View
+                style={[
+                  styles.toggle,
+                  {
+                    padding: 15,
+                    paddingVertical: 20,
+                    margin: 20,
+                    backgroundColor: musicOpen == true ? "#DDD" : bcolor == "#DDD" ? "#FFF" : "#EEE",
+                  },
+                ]}
+              >
+                <Icon name="music" group="ui-interface" />
+              </View>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 isActive == true
@@ -211,9 +317,24 @@ export default function Stopwatch() {
                 )}
               </View>
             </TouchableOpacity>
+            <TouchableOpacity>
+              <View
+                style={[
+                  styles.toggle,
+                  {
+                    padding: 15,
+                    paddingVertical: 20,
+                    margin: 20,
+                    backgroundColor: bcolor == "#DDD" ? "#FFF" : "#EEE",
+                  },
+                ]}
+              >
+                <Icon name="menu" group="ui-interface" />
+              </View>
+            </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => setbottomRow(false)}>
-            <View style={[styles.toggle]}>
+            <View style={[styles.toggle, { marginTop: -10 }]}>
               <Icon name="down" group="mingcute-tiny-bold-filled" />
             </View>
           </TouchableOpacity>
@@ -241,7 +362,6 @@ const styles = StyleSheet.create({
   clock: {
     color: "#FFF",
     fontSize: 80,
-    fontFamily: "NexaLight",
   },
   toggle: {
     padding: 30,
@@ -268,7 +388,7 @@ const styles = StyleSheet.create({
   bottomcontainer: {
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 20,
+    borderRadius: 40,
 
     height: 100,
     marginHorizontal: 15,
@@ -306,13 +426,25 @@ const modalstyles = StyleSheet.create({
   },
   backbutton: {
     padding: 10,
-    paddingHorizontal: 25,
-    backgroundColor: "#00F",
-    marginHorizontal: 30,
+    paddingHorizontal: 50,
+    backgroundColor: "#aaa",
     alignSelf: "center",
     justifyContent: "center",
     borderRadius: 30,
     marginTop: 20,
+  },
+  colorodobutton: {
+    padding: 30,
+    paddingHorizontal: 130,
+    backgroundColor: "#00F",
+    alignSelf: "center",
+    justifyContent: "center",
+    borderRadius: 30,
+    marginTop: 20,
+    shadowOffset: { height: 2 },
+    shadowColor: "#AAA",
+    shadowOpacity: "100%",
+    flexDirection: "row",
   },
   colorrow: {
     marginTop: 10,
@@ -326,4 +458,30 @@ const modalstyles = StyleSheet.create({
     marginHorizontal: 3,
     alignItems: "center",
   },
+  fonts: {
+    padding: 10,
+    borderRadius: 20,
+    width: 110,
+    height: 40,
+    backgroundColor: "#EEE",
+    marginHorizontal: 3,
+    alignItems: "center",
+  },
+});
+
+const musicstyles = StyleSheet.create({
+  container: {
+    width: 320,
+    height: 160,
+    justifyContent: 'center',
+    backgroundColor: "#EEE",
+    marginBottom: -20,
+    borderRadius: 20,
+  },
+  musicbutton: {
+    padding: 10,
+    marginHorizontal: 30,
+    borderRadius: 20,
+    backgroundColor: '#DDD'
+  }
 });

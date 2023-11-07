@@ -12,6 +12,8 @@ export default function App() {
     'Nexa': require("./assets/fonts/NexaHeavy.ttf"),
     'NexaLight': require("./assets/fonts/Nexa-ExtraLight.ttf"),
     'Gratina': require("./assets/fonts/Gratina.otf"),
+    'Butler': require("./assets/fonts/Butler.otf"),
+    'Lemonmilk': require('./assets/fonts/Lemonmilk.otf')
   });
 
   const onLayoutRootView = useCallback(async () => {

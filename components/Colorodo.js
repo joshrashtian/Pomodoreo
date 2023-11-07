@@ -31,7 +31,7 @@ export default function Colorodo({ onSumbit }) {
       Math.floor(Math.random() * bmax) +
       ")"
   );
-  const [nummodal, setnummodal] = useState(true);
+  const [nummodal, setnummodal] = useState(false);
 
   const handleReturn = () => {
     onSumbit(currentcolor);
