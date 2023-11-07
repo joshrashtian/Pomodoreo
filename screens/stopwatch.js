@@ -25,12 +25,12 @@ export default function Stopwatch() {
   const [isActive, setActive] = useState(false);
   const [settingsOpen, setsettingsOpen] = useState(false);
   const [bottomRow, setbottomRow] = useState(true);
-  const [musicOpen, setMusicOpen] = useState(true);
+  const [musicOpen, setMusicOpen] = useState(false);
   const [selectedId, setselectedId] = useState(null);
   const [dynamiccolor, setdynamiccolor] = useState(false);
   const [colorodo, setColorodo] = useState(false);
   const [clockfont, setclockfont] = useState("NexaLight");
-  const [selectedFont, setselected] = useState(null);
+
 
   const [bcolor, setbcolor] = useState("#823");
 
@@ -179,7 +179,7 @@ export default function Stopwatch() {
                   return (
                     <TouchableOpacity
                       onPress={() =>
-                        setclockfont(font.fontname) + setselected(font.id)
+                        setclockfont(font.fontname)
                       }
                       key={index}
                     >
@@ -262,11 +262,14 @@ export default function Stopwatch() {
       {musicOpen == true ? (
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <View style={musicstyles.container}>
+            <Text style={musicstyles.header}>Music Box</Text>
+            <View style={{justifyContent: 'center'}}>
             <TouchableOpacity>
               <View style={musicstyles.musicbutton}>
                 <Text style={{fontFamily: 'Nexa', textAlign: 'center'}}>UNDER CONSTRUCTION</Text>
               </View>
             </TouchableOpacity>
+            </View>
           </View>
         </View>
       ) : null}
@@ -473,7 +476,6 @@ const musicstyles = StyleSheet.create({
   container: {
     width: 320,
     height: 160,
-    justifyContent: 'center',
     backgroundColor: "#EEE",
     marginBottom: -20,
     borderRadius: 20,
@@ -483,5 +485,10 @@ const musicstyles = StyleSheet.create({
     marginHorizontal: 30,
     borderRadius: 20,
     backgroundColor: '#DDD'
+  }, 
+  header: {
+    marginLeft: 12,
+    marginTop: 8,
+    fontFamily: 'Nexa'
   }
 });
