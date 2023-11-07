@@ -13,11 +13,11 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 import { Colors } from "../components/colors";
 import Colorodo from "../components/Colorodo";
-import { AsyncStorage } from "react-native";
 import { fonts } from "../components/Fonts";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Stopwatch() {
   const navigation = useNavigation();
+  const [isLoading, setLoading] = useState(false);
 
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -31,7 +31,6 @@ export default function Stopwatch() {
   const [colorodo, setColorodo] = useState(false);
   const [clockfont, setclockfont] = useState("NexaLight");
 
-
   const [bcolor, setbcolor] = useState("#823");
 
   const handleOnReturn = (color) => {
@@ -43,6 +42,20 @@ export default function Stopwatch() {
     setbcolor(color);
   };
 
+  const getData = async () => {
+    const counterinfo = await AsyncStorage.getItem('@time')
+    setSeconds(isNaN(counterinfo) ? 0 : counterinfo);
+  }
+
+  const syncSeconds = async () => {
+    
+    try{
+    await AsyncStorage.setItem('@time', (seconds).toString)
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   useEffect(() => {
     if (isActive) {
       let interval = setInterval(() => {
@@ -51,12 +64,16 @@ export default function Stopwatch() {
           setMinutes(minutes + 1);
           setSeconds(0);
         } else {
-          setSeconds(seconds + 1);
+          syncSeconds(seconds);
         }
         clearInterval(interval);
       }, 1000);
     }
   }, [seconds]);
+
+  if(isLoading){
+    return null;
+  }
 
   const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
   const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
