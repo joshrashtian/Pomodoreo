@@ -39,23 +39,47 @@ export default function Stopwatch({ updateTime }) {
 
   const handleOnReturn = (color) => {
     setbcolor(color);
+    syncBG(color);
     console.log(color);
   };
 
   const setBackgroundColor = (color) => {
     setbcolor(color);
+    syncBG(color);
   };
+
+  const syncBG = async (color) => {
+    try {
+      const jsonValue = JSON.stringify(color);
+      await AsyncStorage.setItem("@bcolor", jsonValue);
+      } catch (e) {
+        console.log(e);
+      }
+  }
+
+  const syncfont = async (font) => {
+    try {
+      const jsonValue = JSON.stringify(font);
+      await AsyncStorage.setItem("@fonts", jsonValue);
+      } catch (e) {
+        console.log(e);
+      }
+  }
 
   const getData = async () => {
     const counterinfo = await AsyncStorage.getItem("@time");
     const minuteinfo = await AsyncStorage.getItem("@minutes");
+    const bginfo = await AsyncStorage.getItem("@bcolor");
+    const fontinfo = await AsyncStorage.getItem("@fonts")
     setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
     setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null );
+    setBackgroundColor(bginfo != null ? JSON.parse(bginfo) : null );
+    setclockfont(fontinfo != null ? JSON.parse(fontinfo) : null )
   };
 
   const clearData = async () => {
-    await AsyncStorage.clearData("@time");
-    await AsyncStorage.clearData("@minutes");
+    const cleartime = await AsyncStorage.clearData("@time");
+    const clearminutes = await AsyncStorage.clearData("@minutes");
   }
   const syncSeconds = async (time, type) => {
     if (type == "seconds") {
@@ -201,7 +225,7 @@ export default function Stopwatch({ updateTime }) {
                   <Text
                     style={{
                       fontFamily: "Nexa",
-                      fontSize: 30,
+                      fontSize:24,
                       color: "#FFF",
                       fontFamily: "Gratina",
                     }}
@@ -223,7 +247,7 @@ export default function Stopwatch({ updateTime }) {
                 {fonts.map((font, index) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => setclockfont(font.fontname)}
+                      onPress={() => setclockfont(font.fontname) + syncfont(font.fontname)}
                       key={index}
                     >
                       <View
