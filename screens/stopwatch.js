@@ -26,12 +26,17 @@ export default function Stopwatch({ updateTime }) {
   const [settingsOpen, setsettingsOpen] = useState(false);
   const [bottomRow, setbottomRow] = useState(true);
   const [musicOpen, setMusicOpen] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const [selectedId, setselectedId] = useState(null);
   const [dynamiccolor, setdynamiccolor] = useState(false);
   const [colorodo, setColorodo] = useState(false);
   const [clockfont, setclockfont] = useState("NexaLight");
+  const [cooldown, setcooldown] = useState(false);
+
 
   const [bcolor, setbcolor] = useState("#823");
+
+  const [clearconfirm, setclearconfirm] = useState(false);
 
   useEffect(() => {
     getData();
@@ -52,35 +57,36 @@ export default function Stopwatch({ updateTime }) {
     try {
       const jsonValue = JSON.stringify(color);
       await AsyncStorage.setItem("@bcolor", jsonValue);
-      } catch (e) {
-        console.log(e);
-      }
-  }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const syncfont = async (font) => {
     try {
       const jsonValue = JSON.stringify(font);
       await AsyncStorage.setItem("@fonts", jsonValue);
-      } catch (e) {
-        console.log(e);
-      }
-  }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const getData = async () => {
     const counterinfo = await AsyncStorage.getItem("@time");
     const minuteinfo = await AsyncStorage.getItem("@minutes");
     const bginfo = await AsyncStorage.getItem("@bcolor");
-    const fontinfo = await AsyncStorage.getItem("@fonts")
+    const fontinfo = await AsyncStorage.getItem("@fonts");
+
     setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
-    setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null );
-    setBackgroundColor(bginfo != null ? JSON.parse(bginfo) : null );
-    setclockfont(fontinfo != null ? JSON.parse(fontinfo) : null )
+    setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null);
+    setBackgroundColor(bginfo != null ? JSON.parse(bginfo) : null);
+    setclockfont(fontinfo != null ? JSON.parse(fontinfo) : null);
   };
 
   const clearData = async () => {
     const cleartime = await AsyncStorage.clearData("@time");
     const clearminutes = await AsyncStorage.clearData("@minutes");
-  }
+  };
   const syncSeconds = async (time, type) => {
     if (type == "seconds") {
       try {
@@ -103,18 +109,18 @@ export default function Stopwatch({ updateTime }) {
     if (isActive) {
       let interval = setInterval(() => {
         setTotalSeconds(totalseconds + 1);
-        if(isActive){
-        if (seconds === 59) {
-          syncSeconds((seconds + 1), "seconds");
-          syncSeconds((minutes + 1), "minutes");
-          setMinutes(minutes + 1);
-          setSeconds(0);
-        } else {
-          syncSeconds((seconds + 1), "seconds");
-          setSeconds(seconds + 1);
-        }
-        clearInterval(interval);
-      }
+        if (!cooldown) {
+          if (seconds === 59) {
+            syncSeconds(seconds + 1, "seconds");
+            syncSeconds(minutes + 1, "minutes");
+            setMinutes(minutes + 1);
+            setSeconds(0);
+          } else {
+            syncSeconds(seconds + 1, "seconds");
+            setSeconds(seconds + 1);
+          }
+          clearInterval(interval);
+        } 
       }, 1000);
     }
   }, [seconds]);
@@ -124,7 +130,7 @@ export default function Stopwatch({ updateTime }) {
   }
 
   const navigateHome = () => {
-    navigation.navigate("Home");
+    navigation.navigate("Home", seconds);
   };
 
   const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
@@ -225,7 +231,7 @@ export default function Stopwatch({ updateTime }) {
                   <Text
                     style={{
                       fontFamily: "Nexa",
-                      fontSize:24,
+                      fontSize: 24,
                       color: "#FFF",
                       fontFamily: "Gratina",
                     }}
@@ -247,7 +253,9 @@ export default function Stopwatch({ updateTime }) {
                 {fonts.map((font, index) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => setclockfont(font.fontname) + syncfont(font.fontname)}
+                      onPress={() =>
+                        setclockfont(font.fontname) + syncfont(font.fontname)
+                      }
                       key={index}
                     >
                       <View
@@ -342,6 +350,36 @@ export default function Stopwatch({ updateTime }) {
           </View>
         </View>
       ) : null}
+      {optionsOpen == true ? (
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View style={musicstyles.container}>
+            <Text style={musicstyles.header}>Quick Options</Text>
+            <View style={{ justifyContent: "center", marginTop: 10 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  clearconfirm == true
+                    ? setActive(false) +
+                      setSeconds(0) +
+                      setMinutes(0) +
+                      setclearconfirm(false)
+                    : setclearconfirm(true);
+                }}
+              >
+                <View
+                  style={[
+                    musicstyles.musicbutton,
+                    { backgroundColor: clearconfirm == true ? "#AAA" : "#DDD" },
+                  ]}
+                >
+                  <Text style={{ fontFamily: "Nexa", textAlign: "center" }}>
+                    {clearconfirm == false ? "Clear Timer" : "Confirm Clear?"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      ) : null}
       {bottomRow == true ? (
         <View
           style={[
@@ -394,7 +432,13 @@ export default function Stopwatch({ updateTime }) {
                 )}
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={clearData}>
+            <TouchableOpacity
+              onPress={() => {
+                optionsOpen == true
+                  ? setOptionsOpen(false)
+                  : setOptionsOpen(true);
+              }}
+            >
               <View
                 style={[
                   styles.toggle,
@@ -410,7 +454,11 @@ export default function Stopwatch({ updateTime }) {
               </View>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => setbottomRow(false)}>
+          <TouchableOpacity
+            onPress={() =>
+              setbottomRow(false) + setMusicOpen(false) + setOptionsOpen(false)
+            }
+          >
             <View style={[styles.toggle, { marginTop: -10 }]}>
               <Icon name="down" group="mingcute-tiny-bold-filled" />
             </View>

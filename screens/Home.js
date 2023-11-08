@@ -4,8 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Home({ updateData }) {
-  const navigation = useNavigation();
+export default function Home({ route, navigation }) {
+  const {newseconds} = route.params;
   const [seconds, setSeconds] = useState(null);
   const [minutes, setMinutes] = useState(null);
 
@@ -18,7 +18,7 @@ export default function Home({ updateData }) {
 
   useEffect(() => {
     getData();
-  }, [seconds] || [navigation]);
+  }, [newseconds] );
 
   const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
   const displaySeconds = seconds < 10 ? "0" + seconds : seconds;

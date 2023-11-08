@@ -11,7 +11,7 @@ export default function Navigation() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false}}>
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Home" component={Home} initialParams={{ newseconds: 0 }} />
         <Stack.Screen name="Stopwatch" component={Stopwatch} />
       </Stack.Navigator>
     </NavigationContainer>
