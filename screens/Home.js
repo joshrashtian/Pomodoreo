@@ -1,11 +1,22 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-export default function Home({ seconds }) {
+export default function Home() {
   const navigation = useNavigation();
+  const [seconds, setSeconds] = useState(null);
+
+  const getData = async () => {
+    const counterinfo = await AsyncStorage.getItem('@time')
+    setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
+  }
+
+  useEffect(() => {
+    getData()
+  }, [seconds]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pomodoreo</Text>
@@ -23,9 +34,12 @@ export default function Home({ seconds }) {
             >
               Stopwatch
             </Text>
-            <Text>
-            </Text>
           </View>
+          <View style={{ padding: 10, backgroundColor: '#DDD', borderRadius: 30}}>
+            <Text style={{fontFamily: 'Nexa'}}>
+            {seconds}
+            </Text>
+            </View>
         </TouchableOpacity>
       </View>
     </View>

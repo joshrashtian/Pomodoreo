@@ -33,6 +33,10 @@ export default function Stopwatch() {
 
   const [bcolor, setbcolor] = useState("#823");
 
+  useEffect(() => {
+    getData()
+  }, [null]);
+
   const handleOnReturn = (color) => {
     setbcolor(color);
     console.log(color);
@@ -44,13 +48,14 @@ export default function Stopwatch() {
 
   const getData = async () => {
     const counterinfo = await AsyncStorage.getItem('@time')
-    setSeconds(isNaN(counterinfo) ? 0 : counterinfo);
+    setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
   }
 
-  const syncSeconds = async () => {
+  const syncSeconds = async (currentseconds) => {
     
     try{
-    await AsyncStorage.setItem('@time', (seconds).toString)
+    const jsonValue = JSON.stringify(currentseconds);
+    await AsyncStorage.setItem('@time', jsonValue);
     } catch (e) {
       console.log(e);
     }
@@ -64,6 +69,7 @@ export default function Stopwatch() {
           setMinutes(minutes + 1);
           setSeconds(0);
         } else {
+          setSeconds(seconds + 1);
           syncSeconds(seconds);
         }
         clearInterval(interval);
@@ -78,6 +84,8 @@ export default function Stopwatch() {
   const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
   const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
 
+  
+  
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bcolor }]}>
       {bottomRow == true ? (
