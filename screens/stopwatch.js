@@ -15,7 +15,7 @@ import { Colors } from "../components/colors";
 import Colorodo from "../components/Colorodo";
 import { fonts } from "../components/Fonts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-export default function Stopwatch() {
+export default function Stopwatch({ updateTime }) {
   const navigation = useNavigation();
   const [isLoading, setLoading] = useState(false);
 
@@ -34,7 +34,7 @@ export default function Stopwatch() {
   const [bcolor, setbcolor] = useState("#823");
 
   useEffect(() => {
-    getData()
+    getData();
   }, [null]);
 
   const handleOnReturn = (color) => {
@@ -47,50 +47,70 @@ export default function Stopwatch() {
   };
 
   const getData = async () => {
-    const counterinfo = await AsyncStorage.getItem('@time')
+    const counterinfo = await AsyncStorage.getItem("@time");
+    const minuteinfo = await AsyncStorage.getItem("@minutes");
     setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
-  }
+    setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null );
+  };
 
-  const syncSeconds = async (currentseconds) => {
-    
-    try{
-    const jsonValue = JSON.stringify(currentseconds);
-    await AsyncStorage.setItem('@time', jsonValue);
-    } catch (e) {
-      console.log(e);
-    }
+  const clearData = async () => {
+    await AsyncStorage.clearData("@time");
+    await AsyncStorage.clearData("@minutes");
   }
+  const syncSeconds = async (time, type) => {
+    if (type == "seconds") {
+      try {
+        const jsonValue = JSON.stringify(time);
+        await AsyncStorage.setItem("@time", jsonValue);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      try {
+        const minValue = JSON.stringify(time);
+        await AsyncStorage.setItem("@minutes", minValue);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
 
   useEffect(() => {
     if (isActive) {
       let interval = setInterval(() => {
         setTotalSeconds(totalseconds + 1);
+        if(isActive){
         if (seconds === 59) {
+          syncSeconds((seconds + 1), "seconds");
+          syncSeconds((minutes + 1), "minutes");
           setMinutes(minutes + 1);
           setSeconds(0);
         } else {
+          syncSeconds((seconds + 1), "seconds");
           setSeconds(seconds + 1);
-          syncSeconds(seconds);
         }
         clearInterval(interval);
+      }
       }, 1000);
     }
   }, [seconds]);
 
-  if(isLoading){
+  if (isLoading) {
     return null;
   }
+
+  const navigateHome = () => {
+    navigation.navigate("Home");
+  };
 
   const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
   const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
 
-  
-  
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bcolor }]}>
       {bottomRow == true ? (
         <View style={styles.toprow}>
-          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+          <TouchableOpacity onPress={navigateHome}>
             <View style={styles.back}>
               <Icon name="back-2" group="mingcute-tiny-bold-filled" />
             </View>
@@ -203,9 +223,7 @@ export default function Stopwatch() {
                 {fonts.map((font, index) => {
                   return (
                     <TouchableOpacity
-                      onPress={() =>
-                        setclockfont(font.fontname)
-                      }
+                      onPress={() => setclockfont(font.fontname)}
                       key={index}
                     >
                       <View
@@ -288,12 +306,14 @@ export default function Stopwatch() {
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <View style={musicstyles.container}>
             <Text style={musicstyles.header}>Music Box</Text>
-            <View style={{justifyContent: 'center'}}>
-            <TouchableOpacity>
-              <View style={musicstyles.musicbutton}>
-                <Text style={{fontFamily: 'Nexa', textAlign: 'center'}}>UNDER CONSTRUCTION</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={{ justifyContent: "center" }}>
+              <TouchableOpacity>
+                <View style={musicstyles.musicbutton}>
+                  <Text style={{ fontFamily: "Nexa", textAlign: "center" }}>
+                    UNDER CONSTRUCTION
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -318,7 +338,12 @@ export default function Stopwatch() {
                     padding: 15,
                     paddingVertical: 20,
                     margin: 20,
-                    backgroundColor: musicOpen == true ? "#DDD" : bcolor == "#DDD" ? "#FFF" : "#EEE",
+                    backgroundColor:
+                      musicOpen == true
+                        ? "#DDD"
+                        : bcolor == "#DDD"
+                        ? "#FFF"
+                        : "#EEE",
                   },
                 ]}
               >
@@ -345,7 +370,7 @@ export default function Stopwatch() {
                 )}
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={clearData}>
               <View
                 style={[
                   styles.toggle,
@@ -509,11 +534,11 @@ const musicstyles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 30,
     borderRadius: 20,
-    backgroundColor: '#DDD'
-  }, 
+    backgroundColor: "#DDD",
+  },
   header: {
     marginLeft: 12,
     marginTop: 8,
-    fontFamily: 'Nexa'
-  }
+    fontFamily: "Nexa",
+  },
 });

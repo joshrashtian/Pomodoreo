@@ -1,21 +1,27 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Home() {
+export default function Home({ updateData }) {
   const navigation = useNavigation();
   const [seconds, setSeconds] = useState(null);
+  const [minutes, setMinutes] = useState(null);
 
   const getData = async () => {
-    const counterinfo = await AsyncStorage.getItem('@time')
-    setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
-  }
+    const secondinfo = await AsyncStorage.getItem("@time");
+    const minuteinfo = await AsyncStorage.getItem("@minutes");
+    setSeconds(secondinfo != null ? JSON.parse(secondinfo) : null);
+    setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null);
+  };
 
   useEffect(() => {
-    getData()
-  }, [seconds]);
+    getData();
+  }, [seconds] || [navigation]);
+
+  const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
+  const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
 
   return (
     <View style={styles.container}>
@@ -30,16 +36,27 @@ export default function Home() {
               group="mingcute-tiny-bold-filled"
             />
             <Text
-              style={{ fontFamily: 'NexaLight',fontWeight: "300", fontSize: 30, marginLeft: 14, marginTop: 4, color: '#555'}}
+              style={{
+                fontFamily: "NexaLight",
+                fontWeight: "300",
+                fontSize: 30,
+                marginLeft: 14,
+                marginTop: 4,
+                color: "#555",
+              }}
             >
               Stopwatch
             </Text>
           </View>
-          <View style={{ padding: 10, backgroundColor: '#DDD', borderRadius: 30}}>
-            <Text style={{fontFamily: 'Nexa'}}>
-            {seconds}
-            </Text>
+          {seconds > 0 ? (
+            <View
+              style={{ padding: 10, backgroundColor: "#DDD", borderRadius: 30 }}
+            >
+              <Text style={{ fontFamily: "Nexa" }}>
+                {displayMinutes}:{displaySeconds}
+              </Text>
             </View>
+          ) : null}
         </TouchableOpacity>
       </View>
     </View>
@@ -54,9 +71,9 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 36,
-    fontFamily: 'Nexa',
-    textAlign: 'center',
-    color: "#444"
+    fontFamily: "Nexa",
+    textAlign: "center",
+    color: "#444",
   },
   menubutton: {
     borderRadius: 30,
