@@ -33,8 +33,8 @@ export default function Stopwatch({ updateTime }) {
   const [clockfont, setclockfont] = useState("NexaLight");
   const [cooldown, setcooldown] = useState(false);
 
-
   const [bcolor, setbcolor] = useState("#823");
+  const [size, setSize] = useState(80);
 
   const [clearconfirm, setclearconfirm] = useState(false);
 
@@ -83,10 +83,6 @@ export default function Stopwatch({ updateTime }) {
     setclockfont(fontinfo != null ? JSON.parse(fontinfo) : null);
   };
 
-  const clearData = async () => {
-    const cleartime = await AsyncStorage.clearData("@time");
-    const clearminutes = await AsyncStorage.clearData("@minutes");
-  };
   const syncSeconds = async (time, type) => {
     if (type == "seconds") {
       try {
@@ -105,6 +101,16 @@ export default function Stopwatch({ updateTime }) {
     }
   };
 
+  const clearTimerSync = async (time) => {
+    try {
+      const jsonValue = JSON.stringify(time);
+      await AsyncStorage.setItem("@time", jsonValue);
+      await AsyncStorage.setItem("@minutes", jsonValue);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     if (isActive) {
       let interval = setInterval(() => {
@@ -120,7 +126,7 @@ export default function Stopwatch({ updateTime }) {
             setSeconds(seconds + 1);
           }
           clearInterval(interval);
-        } 
+        }
       }, 1000);
     }
   }, [seconds]);
@@ -153,7 +159,7 @@ export default function Stopwatch({ updateTime }) {
         </View>
       ) : null}
       <View style={styles.container2}>
-        <Text style={[styles.clock, { fontFamily: clockfont }]}>
+        <Text style={[styles.clock, { fontFamily: clockfont, fontSize: size }]}>
           {displayMinutes}:{displaySeconds}
         </Text>
         <Modal visible={settingsOpen} transparent={true}>
@@ -361,7 +367,8 @@ export default function Stopwatch({ updateTime }) {
                     ? setActive(false) +
                       setSeconds(0) +
                       setMinutes(0) +
-                      setclearconfirm(false)
+                      setclearconfirm(false) +
+                      clearTimerSync(0)
                     : setclearconfirm(true);
                 }}
               >
@@ -422,7 +429,9 @@ export default function Stopwatch({ updateTime }) {
               <View
                 style={[
                   styles.toggle,
-                  { backgroundColor: bcolor == "#DDD" ? "#FFF" : "#EEE" },
+                  {
+                    backgroundColor: bcolor == "#DDD" ? "#FFF" : "#EEE",
+                  },
                 ]}
               >
                 {isActive == true ? (
@@ -446,7 +455,12 @@ export default function Stopwatch({ updateTime }) {
                     padding: 15,
                     paddingVertical: 20,
                     margin: 20,
-                    backgroundColor: bcolor == "#DDD" ? "#FFF" : "#EEE",
+                    backgroundColor:
+                      optionsOpen == true
+                        ? "#DDD"
+                        : bcolor == "#DDD"
+                        ? "#FFF"
+                        : "#EEE",
                   },
                 ]}
               >
@@ -459,7 +473,14 @@ export default function Stopwatch({ updateTime }) {
               setbottomRow(false) + setMusicOpen(false) + setOptionsOpen(false)
             }
           >
-            <View style={[styles.toggle, { marginTop: -10 }]}>
+            <View
+              style={{
+                padding: 30,
+                paddingHorizontal: 30,
+                borderRadius: 80,
+                marginTop: -10,
+              }}
+            >
               <Icon name="down" group="mingcute-tiny-bold-filled" />
             </View>
           </TouchableOpacity>

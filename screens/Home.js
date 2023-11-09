@@ -3,24 +3,28 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-ico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function Home({ route, navigation }) {
   const {newseconds} = route.params;
   const [seconds, setSeconds] = useState(null);
   const [minutes, setMinutes] = useState(null);
+  const [clockfont, setclockfont] = useState("Lemonmilk");
+
+  let currentSeconds = JSON.stringify(newseconds);
 
   const getData = async () => {
     const secondinfo = await AsyncStorage.getItem("@time");
     const minuteinfo = await AsyncStorage.getItem("@minutes");
+    const fontinfo = await AsyncStorage.getItem("@fonts");
     setSeconds(secondinfo != null ? JSON.parse(secondinfo) : null);
     setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null);
+    setclockfont(clockfont != null ? JSON.parse(fontinfo) : null);
   };
 
-  useEffect(() => {
-    getData();
-  }, [newseconds] );
+  setInterval(getData, 1000);
 
-  const displayMinutes = minutes < 10 ? "0" + minutes : minutes;
+  const displayMinutes = minutes;
   const displaySeconds = seconds < 10 ? "0" + seconds : seconds;
 
   return (
@@ -47,16 +51,17 @@ export default function Home({ route, navigation }) {
             >
               Stopwatch
             </Text>
-          </View>
-          {seconds > 0 ? (
+            {seconds > 0 ? (
             <View
-              style={{ padding: 10, backgroundColor: "#DDD", borderRadius: 30 }}
+              style={{ padding: 10, backgroundColor: "#DDD", borderRadius: 30, flexDirection: 'row' }}
             >
-              <Text style={{ fontFamily: "Nexa" }}>
+              <Icon name="clock-2" group="mingcute-tiny-bold-filled" width="12" height="12"/>
+              <Text style={{ fontFamily: clockfont, verticalAlign: 'middle', marginLeft: 2}}>
                 {displayMinutes}:{displaySeconds}
               </Text>
             </View>
           ) : null}
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -81,6 +86,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEE",
     padding: 20,
     paddingVertical: 50,
-    flexDirection: "row",
   },
 });
