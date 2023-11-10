@@ -15,7 +15,9 @@ import { Colors } from "../components/colors";
 import Colorodo from "../components/Colorodo";
 import { fonts } from "../components/Fonts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-export default function Stopwatch({ updateTime }) {
+import Listorodo from "../components/Listorodo";
+
+export default function Stopwatch({ getList }) {
   const navigation = useNavigation();
   const [isLoading, setLoading] = useState(false);
 
@@ -30,6 +32,7 @@ export default function Stopwatch({ updateTime }) {
   const [selectedId, setselectedId] = useState(null);
   const [dynamiccolor, setdynamiccolor] = useState(false);
   const [colorodo, setColorodo] = useState(false);
+  const [history, setHistory] = useState(false);
   const [clockfont, setclockfont] = useState("NexaLight");
   const [cooldown, setcooldown] = useState(false);
 
@@ -110,6 +113,10 @@ export default function Stopwatch({ updateTime }) {
       console.log(e);
     }
   };
+
+  const handlelist = async () => {
+
+  }
 
   useEffect(() => {
     if (isActive) {
@@ -337,6 +344,41 @@ export default function Stopwatch({ updateTime }) {
             </TouchableOpacity>
           </View>
         </Modal>
+        <Modal visible={history} transparent={true}>
+          <View
+            style={[
+              modalstyles.container,
+              {
+                marginTop: 420,
+              },
+            ]}
+          >
+            <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+            <Text style={modalstyles.title}>Listorodo</Text>
+            <TouchableOpacity
+              onPress={() =>
+                setHistory(false)
+              }
+            >
+              <View
+                style={[modalstyles.backbutton, { backgroundColor: "#AAA", padding: 1, paddingHorizontal: 10, margin: 10, marginTop: 10 }]}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Nexa",
+                    fontSize: 24,
+                    color: "#FFF",
+                    justifyContent: "center",
+                  }}
+                >
+                  X
+                </Text>
+              </View>
+            </TouchableOpacity>
+            </View>
+            <Listorodo seconds={displaySeconds} minutes={displayMinutes} toggle={() => {isActive ? setActive(false) : setActive(true) + setSeconds(seconds + 1)}} />
+          </View>
+        </Modal>
         <StatusBar style="light" />
       </View>
 
@@ -380,6 +422,20 @@ export default function Stopwatch({ updateTime }) {
                 >
                   <Text style={{ fontFamily: "Nexa", textAlign: "center" }}>
                     {clearconfirm == false ? "Clear Timer" : "Confirm Clear?"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => {
+                setHistory(true)
+              }}>
+                <View
+                  style={[
+                    musicstyles.musicbutton,
+                    { marginTop: 5, backgroundColor: clearconfirm == true ? "#AAA" : "#DDD" },
+                  ]}
+                >
+                  <Text style={{ fontFamily: "Nexa", textAlign: "center" }}>
+                    History
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -569,6 +625,13 @@ const modalstyles = StyleSheet.create({
       height: 1,
     },
     shadowOpacity: "100%",
+  },
+  title: {
+    fontFamily: "Nexa",
+    fontSize: 30,
+    color: "#555",
+    margin: 10,
+    marginLeft: 15,
   },
   backbutton: {
     padding: 10,

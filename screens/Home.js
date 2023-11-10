@@ -34,26 +34,27 @@ export default function Home({ route, navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate("Stopwatch")}>
           <View style={styles.menubutton}>
             <Icon
-              name="stopwatch"
+              name="wall-clock"
               height="50"
               width="50"
-              group="mingcute-tiny-bold-filled"
+              group="ui-interface"
+              style={{marginLeft: 10, marginBottom: 10}}
             />
             <Text
               style={{
-                fontFamily: "NexaLight",
+                fontFamily: "Gratina",
                 fontWeight: "300",
                 fontSize: 30,
                 marginLeft: 14,
                 marginTop: 4,
-                color: "#555",
+                color: "#888",
               }}
             >
               Stopwatch
             </Text>
             {seconds > 0 ? (
             <View
-              style={{ padding: 10, backgroundColor: "#DDD", borderRadius: 30, flexDirection: 'row' }}
+              style={{ padding: 10, backgroundColor: "#DDD", borderRadius: 30, flexDirection: 'row', marginTop: 7 }}
             >
               <Icon name="clock-2" group="mingcute-tiny-bold-filled" width="12" height="12"/>
               <Text style={{ fontFamily: clockfont, verticalAlign: 'middle', marginLeft: 2}}>
@@ -83,8 +84,8 @@ const styles = StyleSheet.create({
   menubutton: {
     borderRadius: 30,
     marginHorizontal: 20,
-    backgroundColor: "#EEE",
-    padding: 20,
-    paddingVertical: 50,
+    backgroundColor: "#eee",
+    padding: 10,
+    paddingVertical: 30,
   },
 });
