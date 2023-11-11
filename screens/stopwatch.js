@@ -114,16 +114,14 @@ export default function Stopwatch({ getList }) {
     }
   };
 
-  const handlelist = async () => {
-
-  }
+  const handlelist = async () => {};
 
   useEffect(() => {
     if (isActive) {
       let interval = setInterval(() => {
         setTotalSeconds(totalseconds + 1);
         if (!cooldown) {
-          if (seconds === 59) {
+          if (seconds >= 59) {
             syncSeconds(seconds + 1, "seconds");
             syncSeconds(minutes + 1, "minutes");
             setMinutes(minutes + 1);
@@ -349,34 +347,51 @@ export default function Stopwatch({ getList }) {
             style={[
               modalstyles.container,
               {
-                marginTop: 420,
+                marginTop: 360,
               },
             ]}
           >
-            <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
-            <Text style={modalstyles.title}>Listorodo</Text>
-            <TouchableOpacity
-              onPress={() =>
-                setHistory(false)
-              }
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <View
-                style={[modalstyles.backbutton, { backgroundColor: "#AAA", padding: 1, paddingHorizontal: 10, margin: 10, marginTop: 10 }]}
-              >
-                <Text
-                  style={{
-                    fontFamily: "Nexa",
-                    fontSize: 24,
-                    color: "#FFF",
-                    justifyContent: "center",
-                  }}
+              <Text style={modalstyles.title}>Listorodo</Text>
+              <TouchableOpacity onPress={() => setHistory(false)}>
+                <View
+                  style={[
+                    modalstyles.backbutton,
+                    {
+                      backgroundColor: "#AAA",
+                      padding: 1,
+                      paddingHorizontal: 10,
+                      margin: 10,
+                      marginTop: 10,
+                    },
+                  ]}
                 >
-                  X
-                </Text>
-              </View>
-            </TouchableOpacity>
+                  <Text
+                    style={{
+                      fontFamily: "Nexa",
+                      fontSize: 24,
+                      color: "#FFF",
+                      justifyContent: "center",
+                    }}
+                  >
+                    X
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
-            <Listorodo seconds={displaySeconds} minutes={displayMinutes} toggle={() => {isActive ? setActive(false) : setActive(true) + setSeconds(seconds + 1)}} />
+            <Listorodo
+              seconds={displaySeconds}
+              minutes={displayMinutes}
+              color={bcolor}
+              font={clockfont}
+              toggle={() => {
+                isActive
+                  ? setActive(false)
+                  : setActive(true) + setSeconds(seconds + 1);
+              }}
+            />
           </View>
         </Modal>
         <StatusBar style="light" />
@@ -425,13 +440,18 @@ export default function Stopwatch({ getList }) {
                   </Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {
-                setHistory(true)
-              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setHistory(true);
+                }}
+              >
                 <View
                   style={[
                     musicstyles.musicbutton,
-                    { marginTop: 5, backgroundColor: clearconfirm == true ? "#AAA" : "#DDD" },
+                    {
+                      marginTop: 5,
+                      backgroundColor: clearconfirm == true ? "#AAA" : "#DDD",
+                    },
                   ]}
                 >
                   <Text style={{ fontFamily: "Nexa", textAlign: "center" }}>
