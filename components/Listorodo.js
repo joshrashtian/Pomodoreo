@@ -17,6 +17,7 @@ export default function Listorodo({
   font,
   onSumbit,
   toggle,
+  timeractive,
 }) {
   const [currentTime, setCurrentTime] = useState();
   const [times, setTimes] = useState([]);
@@ -34,13 +35,16 @@ export default function Listorodo({
     setTasks(tasksCopy);
   };
 
-  const newEntry = (newTime) => {
+  const newEntry = () => {
     setTimes([...times, minutes + ":" + seconds]);
     setTasks([
       ...tasks,
-      newTask == null ? "Lap" : newTask == "" ? "Lap" : newTask,
+      newTask == null
+        ? "Lap "  + (tasks.length + 1)
+        : newTask == ""
+        ? "Lap"
+        : newTask,
     ]);
-    console.log(tasks);
   };
 
   const syncList = async () => {
@@ -101,7 +105,7 @@ export default function Listorodo({
         )}
       </View>
       {times != "" ? (
-        <ScrollView pagingEnabled>
+        <ScrollView>
           {times.map((time, index) => {
             let idNumber = index + 1;
             return (
@@ -119,7 +123,7 @@ export default function Listorodo({
                     }}
                   >
                     <Text style={{ fontFamily: "NexaLight" }}>
-                      {tasks[index]} {idNumber}
+                      {tasks[index]}
                     </Text>
                     <Text style={{ fontFamily: "Nexa", color: "#AAA" }}>
                       {index}
@@ -214,7 +218,11 @@ export default function Listorodo({
             }}
           >
             <View style={styles.newtime}>
-              <Icon name="play" group="ui-interface" color="#FFF" />
+              <Icon
+                name={timeractive ? "pause" : "play"}
+                group="ui-interface"
+                color="#FFF"
+              />
             </View>
           </TouchableOpacity>
           <TouchableOpacity

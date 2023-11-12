@@ -16,6 +16,7 @@ import Colorodo from "../components/Colorodo";
 import { fonts } from "../components/Fonts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Listorodo from "../components/Listorodo";
+import Taskodo from "../components/Taskodo";
 
 export default function Stopwatch({ getList }) {
   const navigation = useNavigation();
@@ -27,7 +28,7 @@ export default function Stopwatch({ getList }) {
   const [isActive, setActive] = useState(false);
   const [settingsOpen, setsettingsOpen] = useState(false);
   const [bottomRow, setbottomRow] = useState(true);
-  const [musicOpen, setMusicOpen] = useState(false);
+  const [tasksOpen, setTasksOpen] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [selectedId, setselectedId] = useState(null);
   const [dynamiccolor, setdynamiccolor] = useState(false);
@@ -35,6 +36,7 @@ export default function Stopwatch({ getList }) {
   const [history, setHistory] = useState(false);
   const [clockfont, setclockfont] = useState("NexaLight");
   const [cooldown, setcooldown] = useState(false);
+  const [task, setTask] = useState();
 
   const [bcolor, setbcolor] = useState("#823");
   const [size, setSize] = useState(80);
@@ -64,6 +66,10 @@ export default function Stopwatch({ getList }) {
       console.log(e);
     }
   };
+
+  const changeTask = (task) => {
+    setTask(task);
+  }
 
   const syncfont = async (font) => {
     try {
@@ -164,6 +170,7 @@ export default function Stopwatch({ getList }) {
         </View>
       ) : null}
       <View style={styles.container2}>
+        <Text style={[styles.clock, { fontFamily: clockfont, fontSize: 16, marginBottom: 5, marginTop: 5 }]}>"{task}"</Text>
         <Text style={[styles.clock, { fontFamily: clockfont, fontSize: size }]}>
           {displayMinutes}:{displaySeconds}
         </Text>
@@ -386,6 +393,7 @@ export default function Stopwatch({ getList }) {
               minutes={displayMinutes}
               color={bcolor}
               font={clockfont}
+              timeractive={isActive}
               toggle={() => {
                 isActive
                   ? setActive(false)
@@ -397,18 +405,12 @@ export default function Stopwatch({ getList }) {
         <StatusBar style="light" />
       </View>
 
-      {musicOpen == true ? (
+      {tasksOpen == true ? (
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <View style={musicstyles.container}>
-            <Text style={musicstyles.header}>Music Box</Text>
+            <Text style={musicstyles.header}>Task Box</Text>
             <View style={{ justifyContent: "center" }}>
-              <TouchableOpacity>
-                <View style={musicstyles.musicbutton}>
-                  <Text style={{ fontFamily: "Nexa", textAlign: "center" }}>
-                    UNDER CONSTRUCTION
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              <Taskodo setTask={changeTask} />
             </View>
           </View>
         </View>
@@ -473,7 +475,7 @@ export default function Stopwatch({ getList }) {
           <View style={{ flexDirection: "row", marginBottom: -10 }}>
             <TouchableOpacity
               onPress={() => {
-                musicOpen == true ? setMusicOpen(false) : setMusicOpen(true);
+                tasksOpen == true ? setTasksOpen(false) : setTasksOpen(true);
               }}
             >
               <View
@@ -484,7 +486,7 @@ export default function Stopwatch({ getList }) {
                     paddingVertical: 20,
                     margin: 20,
                     backgroundColor:
-                      musicOpen == true
+                      tasksOpen == true
                         ? "#DDD"
                         : bcolor == "#DDD"
                         ? "#FFF"
@@ -492,7 +494,7 @@ export default function Stopwatch({ getList }) {
                   },
                 ]}
               >
-                <Icon name="music" group="ui-interface" />
+                <Icon name="tag" group="ui-interface" />
               </View>
             </TouchableOpacity>
             <TouchableOpacity
@@ -546,7 +548,7 @@ export default function Stopwatch({ getList }) {
           </View>
           <TouchableOpacity
             onPress={() =>
-              setbottomRow(false) + setMusicOpen(false) + setOptionsOpen(false)
+              setbottomRow(false) + setTasksOpen(false) + setOptionsOpen(false)
             }
           >
             <View
@@ -701,7 +703,7 @@ const modalstyles = StyleSheet.create({
 const musicstyles = StyleSheet.create({
   container: {
     width: 320,
-    height: 160,
+    height: 220,
     backgroundColor: "#EEE",
     marginBottom: -20,
     borderRadius: 20,
