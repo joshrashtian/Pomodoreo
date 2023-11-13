@@ -15,8 +15,10 @@ const types = ["Work", "School", "Leisure"];
 
 export default function Taskodo({ setTask, minutes, seconds }) {
   const [newTask, setCurrentTask] = useState();
+  const [newType, setNewType] = useState();
   const [globaltype, setType] = useState("Work");
   const [editType, setEditType] = useState(1);
+  const [inputTask, setInputTask] = useState(false);
   const [globaltasks, createTask] = useState([
     {
       id: 0,
@@ -50,12 +52,14 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     const task = {
       name: newTask,
       id: globaltasks.length + 1,
-      type: "Test",
+      type: newType,
     };
     if (task.name == "" || task.name == null) {
       console.log("Can't Add Nothin'");
     } else {
       createTask([...globaltasks, task]);
+      setTask("")
+      setType("")
     }
   };
 
@@ -95,12 +99,22 @@ export default function Taskodo({ setTask, minutes, seconds }) {
           );
         })}
       </ScrollView>
+      {inputTask ? 
       <View style={styles.inputcontainer}>
         <TextInput
           style={styles.input}
           value={newTask}
+          placeholder="Task Name..."
           onChangeText={(text) => {
-            setCurrentTask(text);
+            setCurrentTask(text) + text != "" ? setInputTask(true) : setInputTask(false);
+          }}
+        />
+        <TextInput
+          style={styles.input}
+          value={newType}
+          placeholder="Tag Name..."
+          onChangeText={(text) => {
+            setNewType(text)
           }}
         />
         <TouchableOpacity
@@ -110,16 +124,43 @@ export default function Taskodo({ setTask, minutes, seconds }) {
         >
           <View
             style={{
-              padding: 20,
+              padding: 15,
               backgroundColor: "#A00",
-              flex: 1,
-              borderRadius: 10,
-              marginHorizontal: 5,
+              borderRadius: 30,
             }}
-          />
+          >
+          <Icon
+          name="upload"
+          group="ui-interface"
+          color="#FFF"
+          width="16"
+          height="16"
+        />
+        </View>
         </TouchableOpacity>
-        
     </View>
+    : null}
+    <TouchableOpacity
+          onPress={() => {
+            inputTask ? setInputTask(false) : setInputTask(true)
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: editType == 1 ? "#ddd" : "#F00",
+              padding: 10,
+              marginHorizontal: 30,
+              marginTop: 3,
+              borderRadius: 30,
+            }}
+          >
+            <Text style={{
+              color: editType == 1 ? "#000" : "#FFF",
+              textAlign: 'center',
+              fontFamily: 'Nexa'
+            }}>{inputTask == false ? "Task Editor" : "Close Editor"}</Text>
+          </View>
+        </TouchableOpacity>
     <TouchableOpacity
           onPress={() => {
             editType == 1 ? setEditType(0) : setEditType(1);
@@ -159,12 +200,16 @@ const styles = StyleSheet.create({
   },
   inputcontainer: {
     flexDirection: "row",
+    marginHorizontal: 5,
+    marginVertical: 3,
   },
   input: {
     flex: 1,
-    padding: 10,
+    padding: 12,
     backgroundColor: "#DDD",
+    borderRadius: 30,
     marginHorizontal: 5,
+    fontFamily: 'NexaLight'
   },
   taskText: {
     fontFamily: "Nexa",

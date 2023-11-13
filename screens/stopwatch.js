@@ -170,7 +170,7 @@ export default function Stopwatch({ getList }) {
         </View>
       ) : null}
       <View style={styles.container2}>
-        <Text style={[styles.clock, { fontFamily: clockfont, fontSize: 16, marginBottom: 5, marginTop: 5 }]}>"{task}"</Text>
+        <Text style={[styles.clock, { fontFamily: clockfont, fontSize: 16, marginBottom: 1, marginTop: 5 }]}>{task != null ? task : null}</Text>
         <Text style={[styles.clock, { fontFamily: clockfont, fontSize: size }]}>
           {displayMinutes}:{displaySeconds}
         </Text>
@@ -703,7 +703,7 @@ const modalstyles = StyleSheet.create({
 const musicstyles = StyleSheet.create({
   container: {
     width: 320,
-    height: 220,
+    height: 300,
     backgroundColor: "#EEE",
     marginBottom: -20,
     borderRadius: 20,
