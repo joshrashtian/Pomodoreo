@@ -16,6 +16,14 @@ const types = ["Work", "School", "Leisure"];
 export default function Taskodo({ setTask, minutes, seconds }) {
   const [newTask, setCurrentTask] = useState();
   const [newType, setNewType] = useState();
+  const [taskActive, setTaskActive] = useState(false)
+  
+  const [intSeconds, setIntSeconds] = useState(seconds)
+  const [intMinutes, setIntMinutes] = useState(minutes)
+  const [newSeconds, setNewSeconds] = useState(seconds)
+  const [newMinutes, setNewMinutes] = useState(minutes)
+
+
   const [globaltype, setType] = useState("Work");
   const [editType, setEditType] = useState(1);
   const [inputTask, setInputTask] = useState(false);
@@ -24,22 +32,28 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       id: 0,
       name: "Math Homework",
       type: "School",
+      focusedMinutes: 0,
+      focusedSeconds: 0,
     },
     {
       id: 1,
       name: "Feed Dog",
       type: "Leisure",
+      focusedMinutes: 0,
+      focusedSeconds: 0,
     },
     {
       id: 2,
       name: "Excel Spreadsheet",
       type: "Work",
+      focusedMinutes: 0,
+      focusedSeconds: 0,
     },
   ]);
   const [filteredTasks, setFilteredTasks] = useState([{}]);
 
   const deleteTask = (index) => {
-    let taskListCopy = globaltasks;
+    let taskListCopy = [...globaltasks];
     taskListCopy.splice(index, 1);
     createTask(taskListCopy);
   };
@@ -63,8 +77,37 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     }
   };
 
-  const changeTask = (task) => {
+  const newTime = (index) => {
+    console.log(intMinutes, intSeconds)
+    let tempsec = seconds - intSeconds
+    if(tempsec < 0){
+      tempsec = tempsec + 60;
+    }
+    let tempmin = minutes - intMinutes
+    let array = [...globaltasks];
+    for (let i = 0; i < array.length; i++) {
+      if(array[i].id == index){ 
+      array[i].focusedSeconds = tempsec;
+      array[i].focusedMinutes = tempmin;
+      console.log("Minutes Focused: " + array[i].focusedMinutes + ", Seconds Focused: " + array[i].focusedSeconds)
+      }
+    }
+    createTask(array);
+  }
+  const changeTask = (task, index) => {
+    console.log(taskActive)
+    if(taskActive == false){
     setTask(task);
+    setIntSeconds(seconds);
+    setIntMinutes(minutes);
+    console.log("Initial Minutes: " + minutes + ", Initial Seconds: " + seconds )
+    setTaskActive(true);
+    } else {
+    console.log("New Minutes: " + minutes + ", New Seconds: " + seconds )
+    setTask(null);
+    newTime(index)
+    setTaskActive(false);
+    }
   };
 
   return (
@@ -76,7 +119,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               key={index}
               onPress={() => {
                 editType == 1
-                  ? changeTask(task.name)
+                  ? changeTask(task.name, index)
                   : deleteTask(index) + console.log(index);
               }}
             >
@@ -92,7 +135,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
                     height="15"
                     style={{ alignSelf: "center" }}
                   />
-                  <Text style={styles.tagText}>{task.type}</Text>
+                  <Text style={styles.tagText}>{task.type} - {task.focusedMinutes}:{task.focusedSeconds}</Text>
                 </View>
               </View>
             </TouchableOpacity>

@@ -451,7 +451,7 @@ export default function Stopwatch({ getList }) {
           <View style={musicstyles.container}>
             <Text style={musicstyles.header}>Task Box</Text>
             <View style={{ justifyContent: "center" }}>
-              <Taskodo setTask={changeTask} />
+              <Taskodo setTask={changeTask} seconds={seconds} minutes={minutes} />
             </View>
           </View>
         </View>
