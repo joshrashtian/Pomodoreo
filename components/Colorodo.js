@@ -8,11 +8,12 @@ import {
 import React, { useState } from "react";
 import { ScrollView, Modal } from "react-native";
 
-export default function Colorodo({ onSumbit }) {
+export default function Colorodo({ onSumbit, onNewColor }) {
   const [rmax, setrmax] = useState(255);
   const [gmax, setgmax] = useState(255);
   const [bmax, setbmax] = useState(255);
   const [prevcolor, setprevcolor] = useState(null);
+  const [colorList, setColorList] = useState([])
   const [currentcolor, setcurrentcolor] = useState(
     "rgb(" +
       Math.floor(Math.random() * rmax) +
@@ -35,6 +36,7 @@ export default function Colorodo({ onSumbit }) {
 
   const handleReturn = () => {
     onSumbit(currentcolor);
+    addToList(currentcolor)
   };
 
   const nextColor = () => {
@@ -60,6 +62,10 @@ export default function Colorodo({ onSumbit }) {
     setcurrentcolor(prevcolor);
     setprevcolor(null);
   };
+
+  const addToList = (color) => {
+    onNewColor(color)
+  }
 
   return (
     <View>

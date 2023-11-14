@@ -37,11 +37,12 @@ export default function Stopwatch({ getList }) {
   const [clockfont, setclockfont] = useState("NexaLight");
   const [cooldown, setcooldown] = useState(false);
   const [task, setTask] = useState();
-
   const [bcolor, setbcolor] = useState("#823");
   const [size, setSize] = useState(80);
 
   const [clearconfirm, setclearconfirm] = useState(false);
+
+  const [customList, setCustomList] = useState([{}])
 
   useEffect(() => {
     getData();
@@ -146,6 +147,14 @@ export default function Stopwatch({ getList }) {
     return null;
   }
 
+  const createColor = (color) => {
+    let newColor = {
+      id: customList.length + 1,
+      color: color
+    }
+    setCustomList([...customList, newColor])
+  }
+
   const navigateHome = () => {
     navigation.navigate("Home", seconds);
   };
@@ -217,6 +226,34 @@ export default function Stopwatch({ getList }) {
                         </View>
                       </TouchableOpacity>
                     );
+                  })}
+                  {customList.map((color, index) => {
+                    return (
+                      <TouchableOpacity
+                        onPress={() =>
+                          setBackgroundColor(color.color)
+                        }
+                        key={index}
+                      >
+                        <View
+                          style={[
+                            modalstyles.colors,
+                            {
+                              backgroundColor: color.colorId,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={{
+                              color: (color.light = 1 ? "#FFF" : "#000"),
+                              fontFamily: "Nexa",
+                            }}
+                          >
+                            {color.color}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    )
                   })}
                 </ScrollView>
               </View>
@@ -326,7 +363,7 @@ export default function Stopwatch({ getList }) {
               },
             ]}
           >
-            <Colorodo onSumbit={handleOnReturn} />
+            <Colorodo onSumbit={handleOnReturn} onNewColor={() => {createColor}} />
             <TouchableOpacity
               onPress={() =>
                 setColorodo(false) + setsettingsOpen(true) + setbottomRow(false)
