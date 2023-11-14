@@ -42,7 +42,10 @@ export default function Stopwatch({ getList }) {
 
   const [clearconfirm, setclearconfirm] = useState(false);
 
-  const [customList, setCustomList] = useState([{}])
+  const [customList, setCustomList] = useState([{
+    id: 0,
+    color: 'rgb(150,150,150)'
+  }])
 
   useEffect(() => {
     getData();
@@ -148,10 +151,11 @@ export default function Stopwatch({ getList }) {
   }
 
   const createColor = (color) => {
-    let newColor = {
+    const newColor = {
       id: customList.length + 1,
       color: color
     }
+    console.log(newColor)
     setCustomList([...customList, newColor])
   }
 
@@ -239,13 +243,13 @@ export default function Stopwatch({ getList }) {
                           style={[
                             modalstyles.colors,
                             {
-                              backgroundColor: color.colorId,
+                              backgroundColor: color.color,
                             },
                           ]}
                         >
                           <Text
                             style={{
-                              color: (color.light = 1 ? "#FFF" : "#000"),
+                              color: "#FFF",
                               fontFamily: "Nexa",
                             }}
                           >
@@ -363,7 +367,7 @@ export default function Stopwatch({ getList }) {
               },
             ]}
           >
-            <Colorodo onSumbit={handleOnReturn} onNewColor={() => {createColor}} />
+            <Colorodo onSumbit={handleOnReturn} onNewColor={createColor} />
             <TouchableOpacity
               onPress={() =>
                 setColorodo(false) + setsettingsOpen(true) + setbottomRow(false)
