@@ -18,6 +18,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const [newTask, setCurrentTask] = useState();
   const [newType, setNewType] = useState();
   const [taskActive, setTaskActive] = useState(false);
+  const [task, selectedTask] = useState({});
 
   const [intSeconds, setIntSeconds] = useState(seconds);
   const [intMinutes, setIntMinutes] = useState(minutes);
@@ -33,6 +34,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     {
       id: 0,
       name: "Math Homework",
+      description: "Do Your Math Homework!!",
       type: "School",
       focusedMinutes: 0,
       focusedSeconds: 0,
@@ -40,6 +42,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     {
       id: 1,
       name: "Feed Dog",
+      description: "Feed Your Dog!",
       type: "Leisure",
       focusedMinutes: 0,
       focusedSeconds: 0,
@@ -47,11 +50,13 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     {
       id: 2,
       name: "Excel Spreadsheet",
+      description: "Finish Your Excel Spreadsheet!",
       type: "Work",
       focusedMinutes: 0,
       focusedSeconds: 0,
     },
   ]);
+
   const [filteredTasks, setFilteredTasks] = useState([{}]);
 
   const deleteTask = (index) => {
@@ -68,6 +73,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     const task = {
       name: newTask,
       id: globaltasks.length,
+      description: "",
       type: newType,
       focusedMinutes: 0,
       focusedSeconds: 0,
@@ -93,8 +99,8 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     console.log("Minutes To Go In: " + tempmin + ", Seconds: " + tempsec);
     for (let i = 0; i < array.length; i++) {
       if (array[i].id === index) {
-        array[i].focusedSeconds = tempsec;
-        array[i].focusedMinutes = tempmin;
+        array[i].focusedSeconds = array[i].focusedSeconds + tempsec;
+        array[i].focusedMinutes = array[i].focusedMinutes + tempmin;
         console.log(
           "Minutes Focused: " +
             array[i].focusedMinutes +
@@ -106,8 +112,13 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     console.log(array);
     createTask(array);
   };
+
+  const selectTask = (task) => {
+    console.log(task);
+    selectedTask(task);
+  };
+
   const changeTask = (task, index) => {
-    console.log(taskActive);
     if (taskActive == false) {
       setTask(task);
       setIntSeconds(seconds);
@@ -138,7 +149,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               key={index}
               onPress={() => {
                 editType == 1
-                  ? changeTask(task.name, index)
+                  ? changeTask(task.name, index) + selectTask(task)
                   : deleteTask(index) + console.log(index);
               }}
             >
@@ -200,7 +211,11 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          viewModal ? setViewModal(false) : setViewModal(true);
+          viewModal
+            ? setViewModal(false)
+            : task != "{}"
+            ? console.log(task) + setViewModal(true)
+            : null;
         }}
       >
         <View
@@ -282,11 +297,107 @@ export default function Taskodo({ setTask, minutes, seconds }) {
                 borderRadius: 30,
                 marginTop: 20,
               }}
-            >
-            </View>
+            ></View>
           </TouchableOpacity>
 
-          <Text></Text>
+          <Text
+            style={{
+              fontFamily: "Nexa",
+              fontSize: 26,
+              textAlign: "center",
+              marginTop: 10,
+            }}
+          >
+            {task.name}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 10,
+              backgroundColor: "#EEE",
+              marginHorizontal: 2,
+              borderRadius: 20,
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <View
+              style={styles.modaltextcontainer}
+            >
+              <Text
+                style={styles.modaltext}
+              >
+                Desc
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontFamily: "NexaLight",
+                fontSize: 18,
+                textAlign: "center",
+              }}
+            >
+              {task.description}
+            </Text>
+          </View>
+          <View
+            style={{
+              marginTop: 2,
+              flexDirection: "row",
+              padding: 10,
+              backgroundColor: "#EEE",
+              marginHorizontal: 2,
+              borderRadius: 20,
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <View
+              style={styles.modaltextcontainer}
+            >
+              <Text style={styles.modaltext}>
+                Time Spent
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontFamily: "NexaLight",
+                fontSize: 18,
+                textAlign: "center",
+              }}
+            >
+              {task.focusedMinutes}m {task.focusedSeconds}s
+            </Text>
+          </View>
+          <View
+            style={{
+              marginTop: 2,
+              flexDirection: "row",
+              padding: 10,
+              backgroundColor: "#EEE",
+              marginHorizontal: 2,
+              borderRadius: 20,
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <View
+              style={[styles.modaltextcontainer, {paddingHorizontal: 6}]}
+            >
+              <Text style={styles.modaltext}>
+                Tag
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontFamily: "NexaLight",
+                fontSize: 18,
+                textAlign: "center",
+              }}
+            >
+              {task.type}
+            </Text>
+          </View>
         </View>
       </Modal>
       <TouchableOpacity
@@ -357,4 +468,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 30,
   },
+  modaltext: {
+    fontFamily: "Nexa",
+    fontSize: 16,
+    textAlign: "center",
+    color: "#FFF",
+  },
+  modaltextcontainer: {
+    backgroundColor: "#0AA",
+    padding: 2,
+    borderRadius: 10,
+    paddingHorizontal: 4,
+    marginRight: 10,
+  }
 });
