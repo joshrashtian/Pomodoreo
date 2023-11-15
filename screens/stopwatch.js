@@ -743,7 +743,7 @@ const modalstyles = StyleSheet.create({
 
 const musicstyles = StyleSheet.create({
   container: {
-    width: 320,
+    width: 360,
     height: 300,
     backgroundColor: "#EEE",
     marginBottom: -20,
