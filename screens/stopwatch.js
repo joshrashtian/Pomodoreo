@@ -62,6 +62,15 @@ export default function Stopwatch({ getList }) {
     syncBG(color);
   };
 
+  const syncColorList = async () => {
+    try {
+      const jsonValue = JSON.stringify(customList)
+      await AsyncStorage.setItem("@colorlist", jsonValue)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const syncBG = async (color) => {
     try {
       const jsonValue = JSON.stringify(color);
@@ -89,11 +98,15 @@ export default function Stopwatch({ getList }) {
     const minuteinfo = await AsyncStorage.getItem("@minutes");
     const bginfo = await AsyncStorage.getItem("@bcolor");
     const fontinfo = await AsyncStorage.getItem("@fonts");
+    const colorlist = await AsyncStorage.getItem("@colorlist")
+
+    console.log(colorlist)
 
     setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
     setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null);
     setBackgroundColor(bginfo != null ? JSON.parse(bginfo) : null);
     setclockfont(fontinfo != null ? JSON.parse(fontinfo) : null);
+    setCustomList(colorlist != null ? JSON.parse(colorlist) : customList)
   };
 
   const syncSeconds = async (time, type) => {
@@ -157,6 +170,7 @@ export default function Stopwatch({ getList }) {
     }
     console.log(newColor)
     setCustomList([...customList, newColor])
+    syncColorList()
   }
 
   const navigateHome = () => {
@@ -231,7 +245,15 @@ export default function Stopwatch({ getList }) {
                       </TouchableOpacity>
                     );
                   })}
-                  {customList.map((color, index) => {
+                </ScrollView>
+              </View>
+              <View style={modalstyles.colorrow}>
+              <ScrollView
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator="false"
+                >
+                {customList.map((color, index) => {
                     return (
                       <TouchableOpacity
                         onPress={() =>
@@ -244,6 +266,7 @@ export default function Stopwatch({ getList }) {
                             modalstyles.colors,
                             {
                               backgroundColor: color.color,
+                              width: 200
                             },
                           ]}
                         >
@@ -259,8 +282,8 @@ export default function Stopwatch({ getList }) {
                       </TouchableOpacity>
                     )
                   })}
-                </ScrollView>
-              </View>
+                  </ScrollView>
+                  </View>
               <Text style={{ marginTop: 10, fontFamily: "NexaLight" }}>
                 * Each Mystery Color is Randomized Every Launch!
               </Text>
