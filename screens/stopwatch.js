@@ -516,7 +516,7 @@ export default function Stopwatch({ getList }) {
           <View style={{ flexDirection: "row", marginBottom: -10 }}>
             <TouchableOpacity
               onPress={() => {
-                tasksOpen == true ? setTasksOpen(false) : setTasksOpen(true);
+                tasksOpen == true ? setTasksOpen(false) : setTasksOpen(true) 
               }}
             >
               <View
@@ -597,7 +597,7 @@ export default function Stopwatch({ getList }) {
                 padding: 30,
                 paddingHorizontal: 30,
                 borderRadius: 80,
-                marginTop: -10,
+                marginTop: -30,
               }}
             >
               <Icon name="down" group="mingcute-tiny-bold-filled" />
@@ -606,7 +606,7 @@ export default function Stopwatch({ getList }) {
         </View>
       ) : (
         <TouchableOpacity onPress={() => setbottomRow(true)}>
-          <View style={{ alignSelf: "center", marginBottom: -10 }}>
+          <View style={{ alignSelf: "center" }}>
             <Icon name="up" group="mingcute-tiny-bold-filled" />
           </View>
         </TouchableOpacity>

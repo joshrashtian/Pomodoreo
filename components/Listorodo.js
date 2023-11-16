@@ -36,7 +36,7 @@ export default function Listorodo({
   };
 
   const newEntry = () => {
-    setTimes([...times, minutes + ":" + seconds]);
+    setTimes([...times, minutes + ":" + seconds])
     setTasks([
       ...tasks,
       newTask == null
@@ -44,8 +44,13 @@ export default function Listorodo({
         : newTask == ""
         ? "Lap"
         : newTask,
-    ]);
+    ])
+    syncList()
   };
+
+  useEffect(() => {
+    getList()
+  }, [])
 
   const syncList = async () => {
     try {
@@ -53,6 +58,7 @@ export default function Listorodo({
       const jsonValue2 = JSON.stringify(tasks);
       await AsyncStorage.setItem("@times", jsonValue);
       await AsyncStorage.setItem("@tasks", jsonValue2);
+      console.log("Times: " + jsonValue + " Tasks: " + jsonValue2 )
     } catch (e) {
       console.log(e);
     }
@@ -61,8 +67,8 @@ export default function Listorodo({
   const getList = async () => {
     const listinfo = await AsyncStorage.getItem("@times");
     const tasksinfo = await AsyncStorage.getItem("@tasks");
-    setTimes(listinfo != null ? JSON.parse(listinfo) : "");
-    setTasks(tasksinfo != null ? JSON.parse(tasksinfo) : "");
+    setTimes(listinfo != null ? JSON.parse(listinfo) : times);
+    setTasks(tasksinfo != null ? JSON.parse(tasksinfo) : tasks);
     console.log(times);
   };
 
@@ -185,7 +191,7 @@ export default function Listorodo({
         <ScrollView pagingEnabled horizontal>
           <TouchableOpacity
             onPress={() => {
-              newEntry(currentTime) + syncList;
+              newEntry(currentTime);
             }}
           >
             <View style={[styles.newtime, { height: 60 }]}>
@@ -225,24 +231,6 @@ export default function Listorodo({
               />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              getList();
-            }}
-          >
-            <View style={styles.newtime}>
-              <Icon name="download" group="ui-interface" color="#FFF" />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              syncList();
-            }}
-          >
-            <View style={styles.newtime}>
-              <Icon name="upload" group="ui-interface" color="#FFF" />
-            </View>
-          </TouchableOpacity>
         </ScrollView>
       </View>
     </View>
@@ -275,6 +263,7 @@ const styles = StyleSheet.create({
     marginTop: 320,
     marginHorizontal: 20,
     padding: 8,
+    width: 215,
     backgroundColor: "#EEE",
     alignSelf: "center",
     borderRadius: 30,

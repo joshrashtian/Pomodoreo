@@ -24,7 +24,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const [intMinutes, setIntMinutes] = useState(minutes);
   const [newSeconds, setNewSeconds] = useState(seconds);
   const [newMinutes, setNewMinutes] = useState(minutes);
-
+  const [firstUse, setFirstUse] = useState(true);
   const [viewModal, setViewModal] = useState(false);
 
   const [globaltype, setType] = useState("Work");
@@ -57,6 +57,27 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     },
   ]);
 
+  {
+    /* Data */
+  }
+  const storeData = async () => {
+    try {
+      const jsonObjects = JSON.stringify(globaltasks);
+      const firstTime = JSON.stringify(firstUse);
+      console.log("Stored Tasks: " + jsonObjects)
+      await AsyncStorage.setItem("@tasklist", jsonObjects);
+      await AsyncStorage.setItem("@state", firstTime);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getData = async () => {
+    const tasksinfo = await AsyncStorage.getItem("@tasklist");
+    const state = await AsyncStorage.getItem("@state");
+    createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks)
+    }
+
   const [filteredTasks, setFilteredTasks] = useState([{}]);
 
   const deleteTask = (index) => {
@@ -64,6 +85,10 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     taskListCopy.splice(index, 1);
     createTask(taskListCopy);
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   useEffect(() => {
     setFilteredTasks(globaltasks);
@@ -149,8 +174,10 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               key={index}
               onPress={() => {
                 editType == 1
-                  ? changeTask(task.name, index) + selectTask(task)
-                  : deleteTask(index) + console.log(index);
+                  ? changeTask(task.name, index) +
+                    selectTask(task) +
+                    storeData()
+                  : deleteTask(index) + console.log(index) + storeData();
               }}
             >
               <View style={styles.taskStyle}>
@@ -321,14 +348,8 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               alignContent: "center",
             }}
           >
-            <View
-              style={styles.modaltextcontainer}
-            >
-              <Text
-                style={styles.modaltext}
-              >
-                Desc
-              </Text>
+            <View style={styles.modaltextcontainer}>
+              <Text style={styles.modaltext}>Desc</Text>
             </View>
             <Text
               style={{
@@ -352,12 +373,8 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               alignContent: "center",
             }}
           >
-            <View
-              style={styles.modaltextcontainer}
-            >
-              <Text style={styles.modaltext}>
-                Time Spent
-              </Text>
+            <View style={styles.modaltextcontainer}>
+              <Text style={styles.modaltext}>Time Spent</Text>
             </View>
             <Text
               style={{
@@ -381,12 +398,8 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               alignContent: "center",
             }}
           >
-            <View
-              style={[styles.modaltextcontainer, {paddingHorizontal: 6}]}
-            >
-              <Text style={styles.modaltext}>
-                Tag
-              </Text>
+            <View style={[styles.modaltextcontainer, { paddingHorizontal: 6 }]}>
+              <Text style={styles.modaltext}>Tag</Text>
             </View>
             <Text
               style={{
@@ -480,5 +493,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 4,
     marginRight: 10,
-  }
+  },
 });
