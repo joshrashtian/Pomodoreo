@@ -17,7 +17,7 @@ const types = ["Work", "School", "Leisure"];
 export default function Taskodo({ setTask, minutes, seconds }) {
   const [newTask, setCurrentTask] = useState();
   const [newType, setNewType] = useState();
-  const [taskActive, setTaskActive] = useState(false);
+  const [taskActive, setTaskActive] = useState();
   const [task, selectedTask] = useState({});
 
   const [intSeconds, setIntSeconds] = useState(seconds);
@@ -63,10 +63,16 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const storeData = async () => {
     try {
       const jsonObjects = JSON.stringify(globaltasks);
-      const firstTime = JSON.stringify(firstUse);
-      console.log("Stored Tasks: " + jsonObjects)
+      const state = JSON.stringify(taskActive);
+      const intMin = JSON.stringify(intMinutes);
+      const intSec = JSON.stringify(intSeconds);
+      const currentTaskJSON = JSON.stringify(task);
+      //console.log("Stored Tasks: " + jsonObjects)
       await AsyncStorage.setItem("@tasklist", jsonObjects);
-      await AsyncStorage.setItem("@state", firstTime);
+      await AsyncStorage.setItem("@state", state);
+      await AsyncStorage.setItem("@intmin", intMin);
+      await AsyncStorage.setItem("@intsec", intSec);
+      await AsyncStorage.setItem("@currenttask", currentTaskJSON);
     } catch (e) {
       console.log(e);
     }
@@ -75,8 +81,16 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const getData = async () => {
     const tasksinfo = await AsyncStorage.getItem("@tasklist");
     const state = await AsyncStorage.getItem("@state");
-    createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks)
-    }
+    const intMin = await AsyncStorage.getItem("@intmin");
+    const intSec = await AsyncStorage.getItem("@intsec");
+    const currentJSON = await AsyncStorage.getItem("@currenttask");
+    createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks);
+    setTaskActive(state != null ? (state == true ? true : false) : null);
+    setIntSeconds(intSec != null ? JSON.parse(intSec) : null);
+    setIntMinutes(intMin != null ? JSON.parse(intMin) : null);
+    selectTask(currentJSON != null ? JSON.parse(currentJSON) : null);
+    console.log("Current State: " + taskActive + ". Stored Point: " + state);
+  };
 
   const [filteredTasks, setFilteredTasks] = useState([{}]);
 
@@ -120,11 +134,18 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     if (tempsec < 0) {
       tempsec = tempsec + 60;
     }
+    if (tempsec > 60) {
+      tempmin = tempmin + 1;
+      tempsec = tempsec - 60;
+    }
     let tempmin = minutes - intMinutes;
     console.log("Minutes To Go In: " + tempmin + ", Seconds: " + tempsec);
     for (let i = 0; i < array.length; i++) {
       if (array[i].id === index) {
-        array[i].focusedSeconds = array[i].focusedSeconds + tempsec;
+        array[i].focusedSeconds =
+          array[i].focusedSeconds > 60
+            ? array[i].focusedMinutes + 1 + array[i].focusedSeconds - 60
+            : array[i].focusedSeconds + tempsec;
         array[i].focusedMinutes = array[i].focusedMinutes + tempmin;
         console.log(
           "Minutes Focused: " +
@@ -152,16 +173,36 @@ export default function Taskodo({ setTask, minutes, seconds }) {
         "Initial Minutes: " + minutes + ", Initial Seconds: " + seconds
       );
       setTaskActive(true);
+      storeData();
     } else {
       console.log("New Minutes: " + minutes + ", New Seconds: " + seconds);
       setTask(null);
       newTime(index);
       setTaskActive(false);
+      storeData();
     }
   };
 
   return (
     <View>
+      {taskActive == true ? (
+        <View style={styles.focusContainer}>
+          <View style={{ padding: 3, paddingHorizontal: 5, backgroundColor: '#777', borderRadius: 20}}>
+            <Text style={{ fontSize: 20, fontFamily: "Nexa", color: '#FFF' }}>
+              {"Focusing"}
+            </Text>
+          </View>
+          <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
+            {minutes + ":" + seconds}
+          </Text>
+          <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
+            {(((minutes - intMinutes) * 60) + seconds) - intSeconds}s
+          </Text>
+          <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
+            {intMinutes + ":" + intSeconds}
+          </Text>
+        </View>
+      ) : null}
       <ScrollView
         horizontal
         pagingEnabled
@@ -174,10 +215,8 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               key={index}
               onPress={() => {
                 editType == 1
-                  ? changeTask(task.name, index) +
-                    selectTask(task) +
-                    storeData()
-                  : deleteTask(index) + console.log(index) + storeData();
+                  ? changeTask(task.name, index) + selectTask(task)
+                  : deleteTask(index) + storeData();
               }}
             >
               <View style={styles.taskStyle}>
@@ -493,5 +532,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 4,
     marginRight: 10,
+  },
+  focusContainer: {
+    padding: 10,
+    marginHorizontal: 10,
+    marginVertical: 4,
+    borderRadius: 10,
+    backgroundColor: "#DDD",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
