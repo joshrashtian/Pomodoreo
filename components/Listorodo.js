@@ -33,6 +33,13 @@ export default function Listorodo({
     tasksCopy.splice(deleted, 1);
     setTimes(timesCopy);
     setTasks(tasksCopy);
+    const jsonValue = JSON.stringify(times);
+    AsyncStorage.setItem("@times", jsonValue);
+
+    const jsonValue2 = JSON.stringify(tasks);
+    AsyncStorage.setItem("@tasks", jsonValue2);
+
+    console.log(jsonValue + "\n" + jsonValue2)
   };
 
   const newEntry = () => {
@@ -45,7 +52,15 @@ export default function Listorodo({
         ? "Lap"
         : newTask,
     ])
-    syncList()
+
+
+    const jsonValue = JSON.stringify(times);
+    AsyncStorage.setItem("@times", jsonValue);
+
+    const jsonValue2 = JSON.stringify(tasks);
+    AsyncStorage.setItem("@tasks", jsonValue2);
+
+    console.log(jsonValue + "\n" + jsonValue2)
   };
 
   useEffect(() => {
@@ -70,6 +85,17 @@ export default function Listorodo({
     setTimes(listinfo != null ? JSON.parse(listinfo) : times);
     setTasks(tasksinfo != null ? JSON.parse(tasksinfo) : tasks);
     console.log(times);
+  };
+  
+  const clearList = async () => {
+    try{
+      await AsyncStorage.removeItem('@times')
+      await AsyncStorage.removeItem('@tasks')
+      setTimes("");
+      setTasks("");
+    } catch (e) {
+      console.log(e)
+    }
   };
 
   return (
@@ -231,6 +257,19 @@ export default function Listorodo({
               />
             </View>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              clearList();
+            }}
+          >
+            <View style={styles.newtime}>
+              <Icon
+                name="trash"
+                group="ui-interface"
+                color="#FFF"
+              />
+            </View>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </View>
@@ -263,7 +302,7 @@ const styles = StyleSheet.create({
     marginTop: 320,
     marginHorizontal: 20,
     padding: 8,
-    width: 215,
+    width: 280,
     backgroundColor: "#EEE",
     alignSelf: "center",
     borderRadius: 30,

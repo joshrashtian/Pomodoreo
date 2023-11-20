@@ -20,6 +20,8 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const [taskActive, setTaskActive] = useState();
   const [task, selectedTask] = useState({});
 
+  let globalTask = task;
+
   const [intSeconds, setIntSeconds] = useState(seconds);
   const [intMinutes, setIntMinutes] = useState(minutes);
   const [newSeconds, setNewSeconds] = useState(seconds);
@@ -79,17 +81,21 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   };
 
   const getData = async () => {
+    try {
     const tasksinfo = await AsyncStorage.getItem("@tasklist");
     const state = await AsyncStorage.getItem("@state");
     const intMin = await AsyncStorage.getItem("@intmin");
     const intSec = await AsyncStorage.getItem("@intsec");
     const currentJSON = await AsyncStorage.getItem("@currenttask");
     createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks);
-    setTaskActive(state != null ? (state == true ? true : false) : null);
+    setTaskActive(JSON.parse(state));
     setIntSeconds(intSec != null ? JSON.parse(intSec) : null);
     setIntMinutes(intMin != null ? JSON.parse(intMin) : null);
-    selectTask(currentJSON != null ? JSON.parse(currentJSON) : null);
+    selectTask(currentJSON != null ? JSON.parse(currentJSON) : currentJSON);
     console.log("Current State: " + taskActive + ". Stored Point: " + state);
+    } catch (e) {
+      console.log(e)
+    }
   };
 
   const [filteredTasks, setFilteredTasks] = useState([{}]);
@@ -98,6 +104,9 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     let taskListCopy = [...globaltasks];
     taskListCopy.splice(index, 1);
     createTask(taskListCopy);
+
+    const jsonObjects = JSON.stringify(globaltasks);
+    AsyncStorage.setItem("@tasklist", jsonObjects);
   };
 
   useEffect(() => {
@@ -147,6 +156,10 @@ export default function Taskodo({ setTask, minutes, seconds }) {
             ? array[i].focusedMinutes + 1 + array[i].focusedSeconds - 60
             : array[i].focusedSeconds + tempsec;
         array[i].focusedMinutes = array[i].focusedMinutes + tempmin;
+
+        const jsonObjects = JSON.stringify(globaltasks);
+        AsyncStorage.setItem("@tasklist", jsonObjects);
+
         console.log(
           "Minutes Focused: " +
             array[i].focusedMinutes +
@@ -173,25 +186,49 @@ export default function Taskodo({ setTask, minutes, seconds }) {
         "Initial Minutes: " + minutes + ", Initial Seconds: " + seconds
       );
       setTaskActive(true);
-      storeData();
+      const jsonObjects = JSON.stringify(globaltasks);
+      const state = JSON.stringify(true);
+      const intMin = JSON.stringify(minutes);
+      const intSec = JSON.stringify(seconds);
+      const currentTaskJSON = JSON.stringify(task);
+
+      AsyncStorage.setItem("@tasklist", jsonObjects);
+      AsyncStorage.setItem("@state", state);
+      AsyncStorage.setItem("@intmin", intMin);
+      AsyncStorage.setItem("@intsec", intSec);
+      AsyncStorage.setItem("@currenttask", currentTaskJSON);
+
     } else {
       console.log("New Minutes: " + minutes + ", New Seconds: " + seconds);
       setTask(null);
       newTime(index);
       setTaskActive(false);
-      storeData();
+
+      const jsonObjects = JSON.stringify(globaltasks);
+      const state = JSON.stringify(false);
+      const intMin = JSON.stringify(minutes);
+      const intSec = JSON.stringify(seconds);
+      const currentTaskJSON = JSON.stringify("");
+
+      AsyncStorage.setItem("@tasklist", jsonObjects);
+      AsyncStorage.setItem("@state", state);
+      AsyncStorage.setItem("@intmin", intMin);
+      AsyncStorage.setItem("@intsec", intSec);
+      AsyncStorage.setItem("@currenttask", currentTaskJSON);
     }
   };
 
   return (
     <View>
+      <ScrollView>
       {taskActive == true ? (
+        <View style={{marginHorizontal: 10, backgroundColor: '#AAA', borderRadius: 20}}>
+        <View style={{ padding: 3, paddingHorizontal: 5, backgroundColor: '#AAA', borderRadius: 20}}>
+        <Text style={{ fontSize: 20, fontFamily: "Nexa", color: '#FFF', alignSelf: 'center' }}>
+          Focusing - {task.name}
+        </Text>
+      </View>
         <View style={styles.focusContainer}>
-          <View style={{ padding: 3, paddingHorizontal: 5, backgroundColor: '#777', borderRadius: 20}}>
-            <Text style={{ fontSize: 20, fontFamily: "Nexa", color: '#FFF' }}>
-              {"Focusing"}
-            </Text>
-          </View>
           <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
             {minutes + ":" + seconds}
           </Text>
@@ -202,12 +239,13 @@ export default function Taskodo({ setTask, minutes, seconds }) {
             {intMinutes + ":" + intSeconds}
           </Text>
         </View>
+        </View>
       ) : null}
       <ScrollView
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator="false"
-        style={{ flexWrap: "wrap" }}
+        style={{ flexWrap: "wrap", marginHorizontal: 10 }}
       >
         {filteredTasks.map((task, index) => {
           return (
@@ -219,7 +257,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
                   : deleteTask(index) + storeData();
               }}
             >
-              <View style={styles.taskStyle}>
+              <View style={[styles.taskStyle, {backgroundColor: task.name === globalTask.name ? taskActive ? "#CCC" : "DDD" : "#DDD"}]}>
                 <Text style={styles.taskText}>{task.name}</Text>
                 <View
                   style={{ flexDirection: "row", justifyContent: "center" }}
@@ -275,34 +313,6 @@ export default function Taskodo({ setTask, minutes, seconds }) {
           </Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          viewModal
-            ? setViewModal(false)
-            : task != "{}"
-            ? console.log(task) + setViewModal(true)
-            : null;
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "#ddd",
-            padding: 10,
-            marginHorizontal: 30,
-            marginTop: 3,
-            borderRadius: 30,
-          }}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              fontFamily: "Nexa",
-            }}
-          >
-            View Details
-          </Text>
-        </View>
-      </TouchableOpacity>
       {inputTask ? (
         <View style={styles.inputcontainer}>
           <TextInput
@@ -346,6 +356,34 @@ export default function Taskodo({ setTask, minutes, seconds }) {
           </TouchableOpacity>
         </View>
       ) : null}
+      <TouchableOpacity
+        onPress={() => {
+          viewModal
+            ? setViewModal(false)
+            : task != "{}"
+            ? console.log(task) + setViewModal(true)
+            : null;
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: "#ddd",
+            padding: 10,
+            marginHorizontal: 30,
+            marginTop: 3,
+            borderRadius: 30,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontFamily: "Nexa",
+            }}
+          >
+            View Details
+          </Text>
+        </View>
+      </TouchableOpacity>
       <Modal transparent={true} visible={viewModal}>
         <View style={styles.viewcontainer}>
           <TouchableOpacity
@@ -477,6 +515,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
           </Text>
         </View>
       </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }
@@ -535,9 +574,10 @@ const styles = StyleSheet.create({
   },
   focusContainer: {
     padding: 10,
-    marginHorizontal: 10,
-    marginVertical: 4,
-    borderRadius: 10,
+    marginVertical: 1,
+    marginBottom: 10,
+    borderRadius: 20,
+    marginHorizontal: 6,
     backgroundColor: "#DDD",
     flexDirection: "row",
     justifyContent: "space-between",

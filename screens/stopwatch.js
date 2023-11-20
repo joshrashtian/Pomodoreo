@@ -606,7 +606,7 @@ export default function Stopwatch({ getList }) {
                   },
                 ]}
               >
-                <Icon name="menu" group="ui-interface" />
+                <Icon name="settings" group="ui-interface" />
               </View>
             </TouchableOpacity>
           </View>
