@@ -17,6 +17,7 @@ const types = ["Work", "School", "Leisure"];
 export default function Taskodo({ setTask, minutes, seconds }) {
   const [newTask, setCurrentTask] = useState();
   const [newType, setNewType] = useState();
+  const [desc, setDisc] = useState();
   const [taskActive, setTaskActive] = useState();
   const [task, selectedTask] = useState({ name: "None Selected", description: "Select a Task!", focusedMinutes: 0, focusedSeconds: 0, type: "N/A"});
 
@@ -121,7 +122,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     const task = {
       name: newTask,
       id: globaltasks.length,
-      description: "",
+      description: desc,
       type: newType,
       focusedMinutes: 0,
       focusedSeconds: 0,
@@ -166,6 +167,16 @@ export default function Taskodo({ setTask, minutes, seconds }) {
             ", Seconds Focused: " +
             array[i].focusedSeconds
         );
+      }
+    }
+    for (let i = 0; i < array.length; i++) {
+      if (array[i].focusedSeconds > 59) {
+        let grabSeconds = array[i].focusedSeconds
+        while (grabSeconds > 59) {
+          array[i].focusedMinutes++
+          grabSeconds = grabSeconds - 60
+        }
+        array[i].focusedSeconds = grabSeconds
       }
     }
     console.log(array);
@@ -247,7 +258,10 @@ export default function Taskodo({ setTask, minutes, seconds }) {
                   alignSelf: "center",
                 }}
               >
-                Focusing - {task.name}
+                {task.name != undefined ?
+                "Focusing - " + task.name
+                : "Focusing - Unassigned"
+                }
               </Text>
             </View>
             <View style={styles.focusContainer}>
@@ -350,8 +364,9 @@ export default function Taskodo({ setTask, minutes, seconds }) {
         </TouchableOpacity>
         {inputTask ? (
           <View style={styles.inputcontainer}>
+            <View style={{ flexDirection: 'column', flex: 2}}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, {marginBottom: 3}]}
               value={newTask}
               placeholder="Task Name..."
               onChangeText={(text) => {
@@ -366,6 +381,15 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               placeholder="Tag Name..."
               onChangeText={(text) => {
                 setNewType(text);
+              }}
+            />
+            </View>
+            <TextInput
+              style={styles.input}
+              value={desc}
+              placeholder="Description..."
+              onChangeText={(text) => {
+                setDisc(text);
               }}
             />
             <TouchableOpacity
