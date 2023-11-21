@@ -42,14 +42,16 @@ export default function Stopwatch({ getList }) {
 
   const [clearconfirm, setclearconfirm] = useState(false);
 
-  const [customList, setCustomList] = useState([{
-    id: 0,
-    color: 'rgb(150,150,150)'
-  }])
+  const [customList, setCustomList] = useState([
+    {
+      id: 0,
+      color: "rgb(150,150,150)",
+    },
+  ]);
 
   useEffect(() => {
     getData();
-  }, [null]);
+  }, []);
 
   const handleOnReturn = (color) => {
     setbcolor(color);
@@ -64,12 +66,12 @@ export default function Stopwatch({ getList }) {
 
   const syncColorList = async () => {
     try {
-      const jsonValue = JSON.stringify(customList)
-      await AsyncStorage.setItem("@colorlist", jsonValue)
+      const jsonValue = JSON.stringify(customList);
+      await AsyncStorage.setItem("@colorlist", jsonValue);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
 
   const syncBG = async (color) => {
     try {
@@ -82,7 +84,7 @@ export default function Stopwatch({ getList }) {
 
   const changeTask = (task) => {
     setTask(task);
-  }
+  };
 
   const syncfont = async (font) => {
     try {
@@ -98,15 +100,15 @@ export default function Stopwatch({ getList }) {
     const minuteinfo = await AsyncStorage.getItem("@minutes");
     const bginfo = await AsyncStorage.getItem("@bcolor");
     const fontinfo = await AsyncStorage.getItem("@fonts");
-    const colorlist = await AsyncStorage.getItem("@colorlist")
+    const colorlist = await AsyncStorage.getItem("@colorlist");
 
-    console.log(colorlist)
+    console.log(colorlist);
 
-    setSeconds(counterinfo != null ? JSON.parse(counterinfo) : null);
-    setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : null);
-    setBackgroundColor(bginfo != null ? JSON.parse(bginfo) : null);
-    setclockfont(fontinfo != null ? JSON.parse(fontinfo) : null);
-    setCustomList(colorlist != null ? JSON.parse(colorlist) : customList)
+    setSeconds(counterinfo != null ? JSON.parse(counterinfo) : 0);
+    setMinutes(minuteinfo != null ? JSON.parse(minuteinfo) : 0);
+    setBackgroundColor(bginfo != null ? JSON.parse(bginfo) : "#333");
+    setclockfont(fontinfo != null ? JSON.parse(fontinfo) : "Nexa");
+    setCustomList(colorlist != null ? JSON.parse(colorlist) : customList);
   };
 
   const syncSeconds = async (time, type) => {
@@ -145,13 +147,26 @@ export default function Stopwatch({ getList }) {
         setTotalSeconds(totalseconds + 1);
         if (!cooldown) {
           if (seconds >= 59) {
-            syncSeconds(seconds + 1, "seconds");
-            syncSeconds(minutes + 1, "minutes");
+            // syncSeconds(seconds + 1, "seconds");
+            // syncSeconds(minutes + 1, "minutes");
             setMinutes(minutes + 1);
             setSeconds(0);
+            try {
+              const minValue = JSON.stringify(minutes + 1);
+              AsyncStorage.setItem("@minutes", minValue);
+              const jsonValue = JSON.stringify(seconds);
+              AsyncStorage.setItem("@time", jsonValue);
+            } catch (e) {
+              console.log(e);
+            }
           } else {
-            syncSeconds(seconds + 1, "seconds");
+            //syncSeconds(seconds + 1, "seconds");
             setSeconds(seconds + 1);
+            try {
+              syncSeconds(seconds, "seconds");
+            } catch (e) {
+              console.log(e);
+            }
           }
           clearInterval(interval);
         }
@@ -164,14 +179,19 @@ export default function Stopwatch({ getList }) {
   }
 
   const createColor = (color) => {
+    if(customList.length > 3){
+      let copy = customList;
+      customList.splice(0, 1)
+      setCustomList(copy)
+    }
     const newColor = {
       id: customList.length + 1,
-      color: color
-    }
-    console.log(newColor)
-    setCustomList([...customList, newColor])
-    syncColorList()
-  }
+      color: color,
+    };
+    console.log(newColor);
+    setCustomList([...customList, newColor]);
+    syncColorList();
+  };
 
   const navigateHome = () => {
     navigation.navigate("Home", seconds);
@@ -197,7 +217,19 @@ export default function Stopwatch({ getList }) {
         </View>
       ) : null}
       <View style={styles.container2}>
-        <Text style={[styles.clock, { fontFamily: clockfont, fontSize: 16, marginBottom: 1, marginTop: 5 }]}>{task != null ? task : null}</Text>
+        <Text
+          style={[
+            styles.clock,
+            {
+              fontFamily: clockfont,
+              fontSize: 16,
+              marginBottom: 1,
+              marginTop: 5,
+            },
+          ]}
+        >
+          {task != null ? task : null}
+        </Text>
         <Text style={[styles.clock, { fontFamily: clockfont, fontSize: size }]}>
           {displayMinutes}:{displaySeconds}
         </Text>
@@ -248,17 +280,15 @@ export default function Stopwatch({ getList }) {
                 </ScrollView>
               </View>
               <View style={modalstyles.colorrow}>
-              <ScrollView
+                <ScrollView
                   horizontal
                   pagingEnabled
                   showsHorizontalScrollIndicator="false"
                 >
-                {customList.map((color, index) => {
+                  {customList.map((color, index) => {
                     return (
                       <TouchableOpacity
-                        onPress={() =>
-                          setBackgroundColor(color.color)
-                        }
+                        onPress={() => setBackgroundColor(color.color)}
                         key={index}
                       >
                         <View
@@ -266,7 +296,7 @@ export default function Stopwatch({ getList }) {
                             modalstyles.colors,
                             {
                               backgroundColor: color.color,
-                              width: 200
+                              width: 200,
                             },
                           ]}
                         >
@@ -280,10 +310,10 @@ export default function Stopwatch({ getList }) {
                           </Text>
                         </View>
                       </TouchableOpacity>
-                    )
+                    );
                   })}
-                  </ScrollView>
-                  </View>
+                </ScrollView>
+              </View>
               <Text style={{ marginTop: 10, fontFamily: "NexaLight" }}>
                 * Each Mystery Color is Randomized Every Launch!
               </Text>
@@ -474,7 +504,11 @@ export default function Stopwatch({ getList }) {
           <View style={musicstyles.container}>
             <Text style={musicstyles.header}>Task Box</Text>
             <View style={{ justifyContent: "center" }}>
-              <Taskodo setTask={changeTask} seconds={seconds} minutes={minutes} />
+              <Taskodo
+                setTask={changeTask}
+                seconds={seconds}
+                minutes={minutes}
+              />
             </View>
           </View>
         </View>
@@ -539,7 +573,7 @@ export default function Stopwatch({ getList }) {
           <View style={{ flexDirection: "row", marginBottom: -10 }}>
             <TouchableOpacity
               onPress={() => {
-                tasksOpen == true ? setTasksOpen(false) : setTasksOpen(true) 
+                tasksOpen == true ? setTasksOpen(false) : setTasksOpen(true);
               }}
             >
               <View

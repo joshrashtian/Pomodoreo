@@ -18,7 +18,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const [newTask, setCurrentTask] = useState();
   const [newType, setNewType] = useState();
   const [taskActive, setTaskActive] = useState();
-  const [task, selectedTask] = useState({});
+  const [task, selectedTask] = useState({ name: "None Selected", description: "Select a Task!", focusedMinutes: 0, focusedSeconds: 0, type: "N/A"});
 
   let globalTask = task;
 
@@ -82,19 +82,19 @@ export default function Taskodo({ setTask, minutes, seconds }) {
 
   const getData = async () => {
     try {
-    const tasksinfo = await AsyncStorage.getItem("@tasklist");
-    const state = await AsyncStorage.getItem("@state");
-    const intMin = await AsyncStorage.getItem("@intmin");
-    const intSec = await AsyncStorage.getItem("@intsec");
-    const currentJSON = await AsyncStorage.getItem("@currenttask");
-    createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks);
-    setTaskActive(JSON.parse(state));
-    setIntSeconds(intSec != null ? JSON.parse(intSec) : null);
-    setIntMinutes(intMin != null ? JSON.parse(intMin) : null);
-    selectTask(currentJSON != null ? JSON.parse(currentJSON) : currentJSON);
-    console.log("Current State: " + taskActive + ". Stored Point: " + state);
+      const tasksinfo = await AsyncStorage.getItem("@tasklist");
+      const state = await AsyncStorage.getItem("@state");
+      const intMin = await AsyncStorage.getItem("@intmin");
+      const intSec = await AsyncStorage.getItem("@intsec");
+      const currentJSON = await AsyncStorage.getItem("@currenttask");
+      createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks);
+      setTaskActive(JSON.parse(state));
+      setIntSeconds(intSec != null ? JSON.parse(intSec) : null);
+      setIntMinutes(intMin != null ? JSON.parse(intMin) : null);
+      selectTask(currentJSON != null ? JSON.parse(currentJSON) : task);
+      console.log("Current State: " + taskActive + ". Stored Point: " + state);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   };
 
@@ -153,7 +153,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       if (array[i].id === index) {
         array[i].focusedSeconds =
           array[i].focusedSeconds > 60
-            ? array[i].focusedMinutes + 1 + array[i].focusedSeconds - 60
+            ? (array[i].focusedMinutes + 1) + (array[i].focusedSeconds - 60)
             : array[i].focusedSeconds + tempsec;
         array[i].focusedMinutes = array[i].focusedMinutes + tempmin;
 
@@ -197,7 +197,6 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       AsyncStorage.setItem("@intmin", intMin);
       AsyncStorage.setItem("@intsec", intSec);
       AsyncStorage.setItem("@currenttask", currentTaskJSON);
-
     } else {
       console.log("New Minutes: " + minutes + ", New Seconds: " + seconds);
       setTask(null);
@@ -221,300 +220,335 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   return (
     <View>
       <ScrollView>
-      {taskActive == true ? (
-        <View style={{marginHorizontal: 10, backgroundColor: '#AAA', borderRadius: 20}}>
-        <View style={{ padding: 3, paddingHorizontal: 5, backgroundColor: '#AAA', borderRadius: 20}}>
-        <Text style={{ fontSize: 20, fontFamily: "Nexa", color: '#FFF', alignSelf: 'center' }}>
-          Focusing - {task.name}
-        </Text>
-      </View>
-        <View style={styles.focusContainer}>
-          <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
-            {minutes + ":" + seconds}
-          </Text>
-          <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
-            {(((minutes - intMinutes) * 60) + seconds) - intSeconds}s
-          </Text>
-          <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
-            {intMinutes + ":" + intSeconds}
-          </Text>
-        </View>
-        </View>
-      ) : null}
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator="false"
-        style={{ flexWrap: "wrap", marginHorizontal: 10 }}
-      >
-        {filteredTasks.map((task, index) => {
-          return (
-            <TouchableOpacity
-              key={index}
-              onPress={() => {
-                editType == 1
-                  ? changeTask(task.name, index) + selectTask(task)
-                  : deleteTask(index) + storeData();
+        {taskActive == true ? (
+          <View
+            style={{
+              marginHorizontal: 10,
+              backgroundColor: "#AAA",
+              borderRadius: 20,
+            }}
+          >
+            <View
+              style={{
+                padding: 3,
+                paddingHorizontal: 5,
+                backgroundColor: "#AAA",
+                borderRadius: 20,
               }}
             >
-              <View style={[styles.taskStyle, {backgroundColor: task.name === globalTask.name ? taskActive ? "#CCC" : "DDD" : "#DDD"}]}>
-                <Text style={styles.taskText}>{task.name}</Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontFamily: "Nexa",
+                  color: "#FFF",
+                  alignSelf: "center",
+                }}
+              >
+                Focusing - {task.name}
+              </Text>
+            </View>
+            <View style={styles.focusContainer}>
+              <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
+                {minutes + ":" + seconds}
+              </Text>
+              <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
+                {(minutes - intMinutes) * 60 + seconds - intSeconds}s
+              </Text>
+              <Text style={{ fontSize: 20, fontFamily: "Nexa", color: "#888" }}>
+                {intMinutes + ":" + intSeconds}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator="false"
+          style={{ flexWrap: "wrap", marginHorizontal: 10 }}
+        >
+          {filteredTasks.map((task, index) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={() => {
+                  editType == 1
+                    ? changeTask(task.name, index) + selectTask(task)
+                    : deleteTask(index) + storeData();
+                }}
+              >
                 <View
-                  style={{ flexDirection: "row", justifyContent: "center" }}
+                  style={[
+                    styles.taskStyle,
+                    {
+                      backgroundColor:
+                      globalTask != null ?
+                        task.name === globalTask.name
+                          ? taskActive
+                            ? "#CCC"
+                            : "DDD"
+                          : "#DDD" : "DDD"
+                    }
+                  ]}
                 >
-                  <Icon
-                    name="tag"
-                    group="ui-interface"
-                    width="15"
-                    height="15"
-                    style={{ alignSelf: "center", marginRight: 3 }}
-                  />
-                  <Text style={styles.tagText}>{task.type}</Text>
-                  <Icon
-                    name="wall-clock"
-                    group="ui-interface"
-                    width="15"
-                    height="15"
-                    style={{ alignSelf: "center", marginHorizontal: 3 }}
-                  />
-                  <Text style={styles.tagText}>
-                    {task.focusedMinutes}:
-                    {task.focusedSeconds < 10
-                      ? "0" + task.focusedSeconds
-                      : task.focusedSeconds}
-                  </Text>
+                  <Text style={styles.taskText}>{ task.name != null ? task.name : null}</Text>
+                  <View
+                    style={{ flexDirection: "row", justifyContent: "center" }}
+                  >
+                    <Icon
+                      name="tag"
+                      group="ui-interface"
+                      width="15"
+                      height="15"
+                      style={{ alignSelf: "center", marginRight: 3 }}
+                    />
+                    <Text style={styles.tagText}>{task.type}</Text>
+                    <Icon
+                      name="wall-clock"
+                      group="ui-interface"
+                      width="15"
+                      height="15"
+                      style={{ alignSelf: "center", marginHorizontal: 3 }}
+                    />
+                    <Text style={styles.tagText}>
+                      {task.focusedMinutes}:
+                      {task.focusedSeconds < 10
+                        ? "0" + task.focusedSeconds
+                        : task.focusedSeconds}
+                    </Text>
+                  </View>
                 </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+        <TouchableOpacity
+          onPress={() => {
+            inputTask ? setInputTask(false) : setInputTask(true);
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#ddd",
+              padding: 10,
+              marginHorizontal: 30,
+              marginTop: 3,
+              borderRadius: 30,
+            }}
+          >
+            <Text
+              style={{
+                textAlign: "center",
+                fontFamily: "Nexa",
+              }}
+            >
+              {inputTask == false ? "Task Editor" : "Close Editor"}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        {inputTask ? (
+          <View style={styles.inputcontainer}>
+            <TextInput
+              style={styles.input}
+              value={newTask}
+              placeholder="Task Name..."
+              onChangeText={(text) => {
+                setCurrentTask(text) + text != ""
+                  ? setInputTask(true)
+                  : setInputTask(false);
+              }}
+            />
+            <TextInput
+              style={styles.input}
+              value={newType}
+              placeholder="Tag Name..."
+              onChangeText={(text) => {
+                setNewType(text);
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                addTask();
+              }}
+            >
+              <View
+                style={{
+                  padding: 15,
+                  backgroundColor: "#A00",
+                  borderRadius: 30,
+                }}
+              >
+                <Icon
+                  name="upload"
+                  group="ui-interface"
+                  color="#FFF"
+                  width="16"
+                  height="16"
+                />
               </View>
             </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-      <TouchableOpacity
-        onPress={() => {
-          inputTask ? setInputTask(false) : setInputTask(true);
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "#ddd",
-            padding: 10,
-            marginHorizontal: 30,
-            marginTop: 3,
-            borderRadius: 30,
+          </View>
+        ) : null}
+        <TouchableOpacity
+          onPress={() => {
+            viewModal
+              ? setViewModal(false)
+              : task != "{}"
+              ? console.log(task) + setViewModal(true)
+              : null;
           }}
         >
-          <Text
+          <View
             style={{
-              textAlign: "center",
-              fontFamily: "Nexa",
+              backgroundColor: "#ddd",
+              padding: 10,
+              marginHorizontal: 30,
+              marginTop: 3,
+              borderRadius: 30,
             }}
           >
-            {inputTask == false ? "Task Editor" : "Close Editor"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-      {inputTask ? (
-        <View style={styles.inputcontainer}>
-          <TextInput
-            style={styles.input}
-            value={newTask}
-            placeholder="Task Name..."
-            onChangeText={(text) => {
-              setCurrentTask(text) + text != ""
-                ? setInputTask(true)
-                : setInputTask(false);
-            }}
-          />
-          <TextInput
-            style={styles.input}
-            value={newType}
-            placeholder="Tag Name..."
-            onChangeText={(text) => {
-              setNewType(text);
-            }}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              addTask();
-            }}
-          >
-            <View
+            <Text
               style={{
-                padding: 15,
-                backgroundColor: "#A00",
-                borderRadius: 30,
+                textAlign: "center",
+                fontFamily: "Nexa",
               }}
             >
-              <Icon
-                name="upload"
-                group="ui-interface"
-                color="#FFF"
-                width="16"
-                height="16"
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
-      ) : null}
-      <TouchableOpacity
-        onPress={() => {
-          viewModal
-            ? setViewModal(false)
-            : task != "{}"
-            ? console.log(task) + setViewModal(true)
-            : null;
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "#ddd",
-            padding: 10,
-            marginHorizontal: 30,
-            marginTop: 3,
-            borderRadius: 30,
-          }}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              fontFamily: "Nexa",
-            }}
-          >
-            View Details
-          </Text>
-        </View>
-      </TouchableOpacity>
-      <Modal transparent={true} visible={viewModal}>
-        <View style={styles.viewcontainer}>
-          <TouchableOpacity
-            onPress={() => {
-              setViewModal(false);
-            }}
-          >
-            <View
-              style={{
-                padding: 10,
-                paddingHorizontal: 50,
-                backgroundColor: "#DDD",
-                alignSelf: "center",
-                justifyContent: "center",
-                borderRadius: 30,
-                marginTop: 20,
+              View Details
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <Modal transparent={true} visible={viewModal}>
+          <View style={styles.viewcontainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setViewModal(false);
               }}
-            ></View>
-          </TouchableOpacity>
+            >
+              <View
+                style={{
+                  padding: 10,
+                  paddingHorizontal: 50,
+                  backgroundColor: "#DDD",
+                  alignSelf: "center",
+                  justifyContent: "center",
+                  borderRadius: 30,
+                  marginTop: 20,
+                }}
+              ></View>
+            </TouchableOpacity>
 
-          <Text
-            style={{
-              fontFamily: "Nexa",
-              fontSize: 26,
-              textAlign: "center",
-              marginTop: 10,
-            }}
-          >
-            {task.name}
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              padding: 10,
-              backgroundColor: "#EEE",
-              marginHorizontal: 2,
-              borderRadius: 20,
-              justifyContent: "center",
-              alignContent: "center",
-            }}
-          >
-            <View style={styles.modaltextcontainer}>
-              <Text style={styles.modaltext}>Desc</Text>
-            </View>
             <Text
               style={{
-                fontFamily: "NexaLight",
-                fontSize: 18,
+                fontFamily: "Nexa",
+                fontSize: 26,
                 textAlign: "center",
+                marginTop: 10,
               }}
             >
-              {task.description}
+              {task.name}
             </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 2,
-              flexDirection: "row",
-              padding: 10,
-              backgroundColor: "#EEE",
-              marginHorizontal: 2,
-              borderRadius: 20,
-              justifyContent: "center",
-              alignContent: "center",
-            }}
-          >
-            <View style={styles.modaltextcontainer}>
-              <Text style={styles.modaltext}>Time Spent</Text>
-            </View>
-            <Text
+            <View
               style={{
-                fontFamily: "NexaLight",
-                fontSize: 18,
-                textAlign: "center",
+                flexDirection: "row",
+                padding: 10,
+                backgroundColor: "#EEE",
+                marginHorizontal: 2,
+                borderRadius: 20,
+                justifyContent: "center",
+                alignContent: "center",
               }}
             >
-              {task.focusedMinutes}m {task.focusedSeconds}s
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 2,
-              flexDirection: "row",
-              padding: 10,
-              backgroundColor: "#EEE",
-              marginHorizontal: 2,
-              borderRadius: 20,
-              justifyContent: "center",
-              alignContent: "center",
-            }}
-          >
-            <View style={[styles.modaltextcontainer, { paddingHorizontal: 6 }]}>
-              <Text style={styles.modaltext}>Tag</Text>
+              <View style={styles.modaltextcontainer}>
+                <Text style={styles.modaltext}>Desc</Text>
+              </View>
+              <Text
+                style={{
+                  fontFamily: "NexaLight",
+                  fontSize: 18,
+                  textAlign: "center",
+                }}
+              >
+                {task.description}
+              </Text>
             </View>
-            <Text
+            <View
               style={{
-                fontFamily: "NexaLight",
-                fontSize: 18,
-                textAlign: "center",
+                marginTop: 2,
+                flexDirection: "row",
+                padding: 10,
+                backgroundColor: "#EEE",
+                marginHorizontal: 2,
+                borderRadius: 20,
+                justifyContent: "center",
+                alignContent: "center",
               }}
             >
-              {task.type}
-            </Text>
+              <View style={styles.modaltextcontainer}>
+                <Text style={styles.modaltext}>Time Spent</Text>
+              </View>
+              <Text
+                style={{
+                  fontFamily: "NexaLight",
+                  fontSize: 18,
+                  textAlign: "center",
+                }}
+              >
+                {task.focusedMinutes}m {task.focusedSeconds}s
+              </Text>
+            </View>
+            <View
+              style={{
+                marginTop: 2,
+                flexDirection: "row",
+                padding: 10,
+                backgroundColor: "#EEE",
+                marginHorizontal: 2,
+                borderRadius: 20,
+                justifyContent: "center",
+                alignContent: "center",
+              }}
+            >
+              <View
+                style={[styles.modaltextcontainer, { paddingHorizontal: 6 }]}
+              >
+                <Text style={styles.modaltext}>Tag</Text>
+              </View>
+              <Text
+                style={{
+                  fontFamily: "NexaLight",
+                  fontSize: 18,
+                  textAlign: "center",
+                }}
+              >
+                {task.type}
+              </Text>
+            </View>
           </View>
-        </View>
-      </Modal>
-      <TouchableOpacity
-        onPress={() => {
-          editType == 1 ? setEditType(0) : setEditType(1);
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: editType == 1 ? "#ddd" : "#F00",
-            padding: 10,
-            marginHorizontal: 30,
-            marginTop: 3,
-            borderRadius: 30,
+        </Modal>
+        <TouchableOpacity
+          onPress={() => {
+            editType == 1 ? setEditType(0) : setEditType(1);
           }}
         >
-          <Text
+          <View
             style={{
-              color: editType == 1 ? "#000" : "#FFF",
-              textAlign: "center",
-              fontFamily: "Nexa",
+              backgroundColor: editType == 1 ? "#ddd" : "#F00",
+              padding: 10,
+              marginHorizontal: 30,
+              marginTop: 3,
+              borderRadius: 30,
             }}
           >
-            {editType == 1 ? "Upload Mode" : "Delete Mode"}
-          </Text>
-        </View>
-      </TouchableOpacity>
+            <Text
+              style={{
+                color: editType == 1 ? "#000" : "#FFF",
+                textAlign: "center",
+                fontFamily: "Nexa",
+              }}
+            >
+              {editType == 1 ? "Upload Mode" : "Delete Mode"}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
