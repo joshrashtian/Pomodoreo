@@ -73,6 +73,12 @@ export default function Stopwatch({ getList }) {
     }
   };
 
+  for(i = 4; i < customList.length; i++){
+    let copy = customList;
+      customList.splice(0, 1)
+      setCustomList(copy)
+  }
+
   const syncBG = async (color) => {
     try {
       const jsonValue = JSON.stringify(color);
@@ -162,11 +168,6 @@ export default function Stopwatch({ getList }) {
           } else {
             //syncSeconds(seconds + 1, "seconds");
             setSeconds(seconds + 1);
-            try {
-              syncSeconds(seconds, "seconds");
-            } catch (e) {
-              console.log(e);
-            }
           }
           clearInterval(interval);
         }

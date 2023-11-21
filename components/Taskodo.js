@@ -177,9 +177,9 @@ export default function Taskodo({ setTask, minutes, seconds }) {
     selectedTask(task);
   };
 
-  const changeTask = (task, index) => {
+  const changeTask = (newtask, index) => {
     if (taskActive == false) {
-      setTask(task);
+      setTask(newtask);
       setIntSeconds(seconds);
       setIntMinutes(minutes);
       console.log(
@@ -190,14 +190,17 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       const state = JSON.stringify(true);
       const intMin = JSON.stringify(minutes);
       const intSec = JSON.stringify(seconds);
-      const currentTaskJSON = JSON.stringify(task);
+      const currentTaskJSON = JSON.stringify(newtask);
 
       AsyncStorage.setItem("@tasklist", jsonObjects);
       AsyncStorage.setItem("@state", state);
       AsyncStorage.setItem("@intmin", intMin);
       AsyncStorage.setItem("@intsec", intSec);
       AsyncStorage.setItem("@currenttask", currentTaskJSON);
+    } else if (task.id != index){
+      console.log("Must Be The Same!")
     } else {
+      console.log(task.id, index)
       console.log("New Minutes: " + minutes + ", New Seconds: " + seconds);
       setTask(null);
       newTime(index);
