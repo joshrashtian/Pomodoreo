@@ -95,7 +95,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       const intMin = await AsyncStorage.getItem("@intmin");
       const intSec = await AsyncStorage.getItem("@intsec");
       const currentJSON = await AsyncStorage.getItem("@currenttask");
-      const limit = await AsyncStorage.getItem("@tasklim", taskLimit)
+      const limit = await AsyncStorage.getItem("@tasklim");
       createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks);
       setTaskActive(JSON.parse(state));
       setIntSeconds(intSec != null ? JSON.parse(intSec) : null)
@@ -118,6 +118,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
 
   const deleteTask = (index) => {
     let taskListCopy = [...globaltasks];
+    console.log(index)
     taskListCopy.splice(index, 1);
     createTask(taskListCopy);
 
@@ -304,7 +305,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
                 onPress={() => {
                   editType == 1
                     ? changeTask(task.name, task.id) + selectTask(task)
-                    : deleteTask(task.id) + storeData();
+                    : deleteTask(index) + storeData();
                 }}
               >
                 <View
