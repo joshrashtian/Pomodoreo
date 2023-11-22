@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   TextInput,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -118,6 +119,19 @@ export default function Listorodo({
               {minutes}:{seconds}
             </Text>
           </TouchableOpacity>
+        ) : customTask ? ( 
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <View style={{ backgroundColor: color, padding: 10, marginHorizontal: 15, borderRadius: 30 }}>
+              <TextInput
+              style={styles.textinput}
+              placeholder="New Name"
+              value={newTask}
+              onChangeText={(text) => {
+                setNewTask(text);
+              }}
+            />
+            </View>
+          </KeyboardAvoidingView>
         ) : (
           <TouchableOpacity
             onPress={() => {
@@ -214,7 +228,6 @@ export default function Listorodo({
         </View>
       )}
       <View style={styles.bottomrow}>
-        <ScrollView pagingEnabled horizontal>
           <TouchableOpacity
             onPress={() => {
               newEntry(currentTime);
@@ -224,26 +237,27 @@ export default function Listorodo({
               <Icon name="plus" group="ui-interface" color="#FFF" />
             </View>
           </TouchableOpacity>
-          {customTask == true ? (
-            <TextInput
-              style={styles.textinput}
-              placeholder="'Lap'...."
-              value={newTask}
-              onChangeText={(text) => {
-                setNewTask(text);
+          { customTask == true ? (
+          <TouchableOpacity
+              onPress={() => {
+                setCustomTask(false);
               }}
-            />
-          ) : (
-            <TouchableOpacity
+            >
+              <View style={[styles.newtime, { backgroundColor: '#aaa'}]}>
+                <Icon name="tag" group="ui-interface" color="#FFF" />
+              </View>
+            </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
               onPress={() => {
                 setCustomTask(true);
               }}
             >
-              <View style={styles.newtime}>
+              <View style={[styles.newtime]}>
                 <Icon name="tag" group="ui-interface" color="#FFF" />
               </View>
             </TouchableOpacity>
-          )}
+            )}
           <TouchableOpacity
             onPress={() => {
               toggle();
@@ -270,7 +284,6 @@ export default function Listorodo({
               />
             </View>
           </TouchableOpacity>
-        </ScrollView>
       </View>
     </View>
   );
@@ -294,15 +307,21 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#EEE",
     marginHorizontal: 10,
+    marginVertical: 3,
     borderRadius: 10,
-    marginVertical: 2,
+    shadowColor: '#AAA',
+    shadowOpacity: '40%',
+    shadowOffset: {
+      height: 1,
+      width: 1
+    },
+    shadowRadius: 0.5
   },
   bottomrow: {
     position: "absolute",
     marginTop: 320,
     marginHorizontal: 20,
     padding: 8,
-    width: 280,
     backgroundColor: "#EEE",
     alignSelf: "center",
     borderRadius: 30,
@@ -315,8 +334,6 @@ const styles = StyleSheet.create({
   },
   textinput: {
     padding: 10,
-    height: 30,
-    width: 100,
     borderRadius: 30,
     marginHorizontal: 3,
     fontFamily: "Nexa",
