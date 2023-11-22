@@ -117,24 +117,6 @@ export default function Stopwatch({ getList }) {
     setCustomList(colorlist != null ? JSON.parse(colorlist) : customList);
   };
 
-  const syncSeconds = async (time, type) => {
-    if (type == "seconds") {
-      try {
-        const jsonValue = JSON.stringify(time);
-        await AsyncStorage.setItem("@time", jsonValue);
-      } catch (e) {
-        console.log(e);
-      }
-    } else {
-      try {
-        const minValue = JSON.stringify(time);
-        await AsyncStorage.setItem("@minutes", minValue);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  };
-
   const clearTimerSync = async (time) => {
     try {
       const jsonValue = JSON.stringify(time);
@@ -153,8 +135,6 @@ export default function Stopwatch({ getList }) {
         setTotalSeconds(totalseconds + 1);
         if (!cooldown) {
           if (seconds >= 59) {
-            // syncSeconds(seconds + 1, "seconds");
-            // syncSeconds(minutes + 1, "minutes");
             setMinutes(minutes + 1);
             setSeconds(0);
             try {
@@ -166,7 +146,6 @@ export default function Stopwatch({ getList }) {
               console.log(e);
             }
           } else {
-            //syncSeconds(seconds + 1, "seconds");
             setSeconds(seconds + 1);
           }
           clearInterval(interval);

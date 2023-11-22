@@ -19,7 +19,9 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const [newType, setNewType] = useState();
   const [desc, setDisc] = useState();
   const [taskActive, setTaskActive] = useState();
-  const [task, selectedTask] = useState({ name: "None Selected", description: "Select a Task!", focusedMinutes: 0, focusedSeconds: 0, type: "N/A"});
+  const [focusColor, setFocusColor] = useState();
+  const [task, selectedTask] = useState({ name: "None Selected", description: "Select a Task!", focusedMinutes: 0, focusedSeconds: 0, type: "N/A", focusColor: "#009"});
+  const [taskLimit, setTaskLimit] = useState();
 
   let globalTask = task;
 
@@ -41,6 +43,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       type: "School",
       focusedMinutes: 0,
       focusedSeconds: 0,
+      focusColor: "#A00"
     },
     {
       id: 1,
@@ -49,6 +52,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       type: "Leisure",
       focusedMinutes: 0,
       focusedSeconds: 0,
+      focusColor: "#0A0"
     },
     {
       id: 2,
@@ -57,6 +61,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       type: "Work",
       focusedMinutes: 0,
       focusedSeconds: 0,
+      focusColor: "#00A"
     },
   ]);
 
@@ -70,12 +75,14 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       const intMin = JSON.stringify(intMinutes);
       const intSec = JSON.stringify(intSeconds);
       const currentTaskJSON = JSON.stringify(task);
+      const limit = JSON.stringify(taskLimit);
       //console.log("Stored Tasks: " + jsonObjects)
       await AsyncStorage.setItem("@tasklist", jsonObjects);
       await AsyncStorage.setItem("@state", state);
       await AsyncStorage.setItem("@intmin", intMin);
       await AsyncStorage.setItem("@intsec", intSec);
       await AsyncStorage.setItem("@currenttask", currentTaskJSON);
+      await AsyncStorage.setItem("@tasklim", limit);
     } catch (e) {
       console.log(e);
     }
@@ -88,15 +95,23 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       const intMin = await AsyncStorage.getItem("@intmin");
       const intSec = await AsyncStorage.getItem("@intsec");
       const currentJSON = await AsyncStorage.getItem("@currenttask");
+      const limit = await AsyncStorage.getItem("@tasklim", taskLimit)
       createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks);
       setTaskActive(JSON.parse(state));
-      setIntSeconds(intSec != null ? JSON.parse(intSec) : null);
+      setIntSeconds(intSec != null ? JSON.parse(intSec) : null)
       setIntMinutes(intMin != null ? JSON.parse(intMin) : null);
       selectTask(currentJSON != null ? JSON.parse(currentJSON) : task);
+      setTaskLimit(limit != null ? JSON.parse(limit) : 3)
       console.log("Current State: " + taskActive + ". Stored Point: " + state);
     } catch (e) {
       console.log(e);
     }
+    //for (let i = 0; i < globaltasks.length; i++) {
+    //  let copy = globaltasks;
+    //  copy[i].id = i;
+    //  console.log(copy[i].name + " " + copy[i].id)
+    //  createTask(copy)
+    //}
   };
 
   const [filteredTasks, setFilteredTasks] = useState([{}]);
@@ -121,11 +136,12 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const addTask = () => {
     const task = {
       name: newTask,
-      id: globaltasks.length,
+      id: (taskLimit + 1),
       description: desc,
       type: newType,
       focusedMinutes: 0,
       focusedSeconds: 0,
+      focusColor: focusColor
     };
     if (task.name == "" || task.name == null) {
       console.log("Can't Add Nothin'");
@@ -133,6 +149,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       createTask([...globaltasks, task]);
       setTask("");
       setType("");
+      setTaskLimit(taskLimit + 1)
     }
   };
 
@@ -208,8 +225,6 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       AsyncStorage.setItem("@intmin", intMin);
       AsyncStorage.setItem("@intsec", intSec);
       AsyncStorage.setItem("@currenttask", currentTaskJSON);
-    } else if (task.id != index){
-      console.log("Must Be The Same!")
     } else {
       console.log(task.id, index)
       console.log("New Minutes: " + minutes + ", New Seconds: " + seconds);
@@ -238,7 +253,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
           <View
             style={{
               marginHorizontal: 10,
-              backgroundColor: "#AAA",
+              backgroundColor: focusColor != "" ? task.focusColor : "#AAA",
               borderRadius: 20,
             }}
           >
@@ -246,7 +261,6 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               style={{
                 padding: 3,
                 paddingHorizontal: 5,
-                backgroundColor: "#AAA",
                 borderRadius: 20,
               }}
             >
@@ -286,11 +300,11 @@ export default function Taskodo({ setTask, minutes, seconds }) {
           {filteredTasks.map((task, index) => {
             return (
               <TouchableOpacity
-                key={index}
+                key={task.id}
                 onPress={() => {
                   editType == 1
-                    ? changeTask(task.name, index) + selectTask(task)
-                    : deleteTask(index) + storeData();
+                    ? changeTask(task.name, task.id) + selectTask(task)
+                    : deleteTask(task.id) + storeData();
                 }}
               >
                 <View
@@ -381,6 +395,14 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               placeholder="Tag Name..."
               onChangeText={(text) => {
                 setNewType(text);
+              }}
+            />
+            <TextInput
+              style={styles.input}
+              value={focusColor}
+              placeholder="Focus Color..."
+              onChangeText={(text) => {
+                setFocusColor(text);
               }}
             />
             </View>
@@ -477,7 +499,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               style={{
                 flexDirection: "row",
                 padding: 10,
-                backgroundColor: "#EEE",
+                backgroundColor: task.focusColor,
                 marginHorizontal: 2,
                 borderRadius: 20,
                 justifyContent: "center",
