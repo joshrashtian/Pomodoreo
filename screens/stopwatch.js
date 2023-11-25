@@ -435,7 +435,7 @@ export default function Stopwatch({ getList }) {
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={modalstyles.title}>Listorodo</Text>
+              <Text style={modalstyles.title}>Record List</Text>
               <TouchableOpacity onPress={() => setHistory(false)}>
                 <View
                   style={[
@@ -539,6 +539,22 @@ export default function Stopwatch({ getList }) {
                   </Text>
                 </View>
               </TouchableOpacity>
+              <Text style={musicstyles.header}>
+                  Quick Color
+              </Text>
+              <View style={{flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: 3, justifyContent: 'center'}}>
+              {
+                customList.map((color, index) => {
+                  return (
+                    <TouchableOpacity key={index} onPress={() => {setBackgroundColor(color.color)}}>
+                      <View style={[{ borderRadius: 10, alignContent: 'center' }, customList.length > 3 ? {backgroundColor: color.color, width: 160, height: 40, margin: 4} : {backgroundColor: color.color, width: 110, height: 40, margin: 2, flexWrap: 'wrap'}]}>
+                       {/* <Text style={{ fontFamily: 'Nexa', color: "#FFF", alignSelf: 'center', fontSize: 13}}>{color.color}</Text> */}
+                      </View>
+                    </TouchableOpacity>
+                  )
+                })
+              }
+              </View>
             </View>
           </View>
         </View>

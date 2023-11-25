@@ -96,11 +96,12 @@ export default function Taskodo({ setTask, minutes, seconds }) {
       const intSec = await AsyncStorage.getItem("@intsec");
       const currentJSON = await AsyncStorage.getItem("@currenttask");
       const limit = await AsyncStorage.getItem("@tasklim");
+      console.log(currentJSON)
       createTask(tasksinfo != null ? JSON.parse(tasksinfo) : globaltasks);
       setTaskActive(JSON.parse(state));
       setIntSeconds(intSec != null ? JSON.parse(intSec) : null)
       setIntMinutes(intMin != null ? JSON.parse(intMin) : null);
-      selectTask(currentJSON != null ? JSON.parse(currentJSON) : task);
+      selectedTask(currentJSON != null ? JSON.parse(currentJSON) : task);
       setTaskLimit(limit != null ? JSON.parse(limit) : 3)
       console.log("Current State: " + taskActive + ". Stored Point: " + state);
     } catch (e) {
@@ -129,10 +130,6 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   useEffect(() => {
     getData();
   }, []);
-
-  useEffect(() => {
-    setFilteredTasks(globaltasks);
-  }, [deleteTask]);
 
   const addTask = () => {
     const task = {
@@ -204,6 +201,12 @@ export default function Taskodo({ setTask, minutes, seconds }) {
   const selectTask = (task) => {
     console.log(task);
     selectedTask(task);
+    try {
+    const ctask = JSON.stringify(task);
+    AsyncStorage.setItem("@currenttask", ctask)
+    } catch (e) {
+      console.log(e)
+    }
   };
 
   const changeTask = (newtask, index) => {
@@ -298,7 +301,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
           showsHorizontalScrollIndicator="false"
           style={{ flexWrap: "wrap", marginHorizontal: 10 }}
         >
-          {filteredTasks.map((task, index) => {
+          {globaltasks.map((task, index) => {
             return (
               <TouchableOpacity
                 key={task.id}
@@ -500,14 +503,14 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               style={{
                 flexDirection: "row",
                 padding: 10,
-                backgroundColor: task.focusColor,
+                backgroundColor: "#EEE",
                 marginHorizontal: 2,
                 borderRadius: 20,
                 justifyContent: "center",
                 alignContent: "center",
               }}
             >
-              <View style={styles.modaltextcontainer}>
+              <View style={[styles.modaltextcontainer, {backgroundColor: task.focusColor}]}>
                 <Text style={styles.modaltext}>Desc</Text>
               </View>
               <Text
@@ -532,7 +535,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
                 alignContent: "center",
               }}
             >
-              <View style={styles.modaltextcontainer}>
+              <View style={[styles.modaltextcontainer, {backgroundColor: task.focusColor}]}>
                 <Text style={styles.modaltext}>Time Spent</Text>
               </View>
               <Text
@@ -558,7 +561,7 @@ export default function Taskodo({ setTask, minutes, seconds }) {
               }}
             >
               <View
-                style={[styles.modaltextcontainer, { paddingHorizontal: 6 }]}
+                style={[styles.modaltextcontainer, {backgroundColor: task.focusColor}]}
               >
                 <Text style={styles.modaltext}>Tag</Text>
               </View>
