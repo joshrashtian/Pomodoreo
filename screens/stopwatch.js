@@ -114,6 +114,14 @@ export default function Stopwatch({ getList }) {
     setBackgroundColor(bginfo != null ? JSON.parse(bginfo) : "#333");
     setclockfont(fontinfo != null ? JSON.parse(fontinfo) : "Nexa");
     setCustomList(colorlist != null ? JSON.parse(colorlist) : customList);
+
+    console.log(counterinfo, minuteinfo)
+
+    if(seconds > 59) {
+      let difference = seconds - 60
+      setMinutes(minutes + 1)
+      setSeconds(difference)
+    }
   };
 
   const clearTimerSync = async (time) => {

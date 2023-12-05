@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Pomodoreo",
-    "slug": "Pomodoreo",
-    "version": "1.0.0",
+    "name": "SwiftStudy",
+    "slug": "SwiftStudy",
+    "version": "0.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/swiftstudyicon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/SwiftStudySplash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.joshuarashtian.SwiftStudy"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "323bf0f7-d912-4cb3-81cb-d69cf8babf22"
+      }
     }
   }
 }
