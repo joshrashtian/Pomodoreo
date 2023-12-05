@@ -119,12 +119,17 @@ export default function Taskodo({ setTask, minutes, seconds }) {
 
   const deleteTask = (index) => {
     let taskListCopy = [...globaltasks];
-    console.log(index)
     taskListCopy.splice(index, 1);
     createTask(taskListCopy);
 
+    try {
     const jsonObjects = JSON.stringify(globaltasks);
+    console.log("Post Deletion: ", jsonObjects)
     AsyncStorage.setItem("@tasklist", jsonObjects);
+    } catch (e) {
+      console.log(e)
+    }
+
   };
 
   useEffect(() => {
@@ -295,6 +300,9 @@ export default function Taskodo({ setTask, minutes, seconds }) {
             </View>
           </View>
         ) : null}
+        { globaltasks === undefined ? <Text>Nothing's Here....</Text>
+          : null
+        }
         <ScrollView
           horizontal
           pagingEnabled

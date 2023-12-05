@@ -31,7 +31,6 @@ export default function Stopwatch({ getList }) {
   const [tasksOpen, setTasksOpen] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [selectedId, setselectedId] = useState(null);
-  const [dynamiccolor, setdynamiccolor] = useState(false);
   const [colorodo, setColorodo] = useState(false);
   const [history, setHistory] = useState(false);
   const [clockfont, setclockfont] = useState("NexaLight");
@@ -127,8 +126,6 @@ export default function Stopwatch({ getList }) {
     }
   };
 
-  const handlelist = async () => {};
-
   useEffect(() => {
     if (isActive) {
       let interval = setInterval(() => {
@@ -184,11 +181,11 @@ export default function Stopwatch({ getList }) {
     <SafeAreaView style={[styles.container, { backgroundColor: bcolor }]}>
       {bottomRow == true ? (
         <View style={styles.toprow}>
-          <TouchableOpacity onPress={navigateHome}>
+          {/*<TouchableOpacity onPress={navigateHome}>
             <View style={styles.back}>
               <Icon name="back-2" group="mingcute-tiny-bold-filled" />
             </View>
-          </TouchableOpacity>
+      </TouchableOpacity>*/}
           <TouchableOpacity onPress={() => setsettingsOpen(true)}>
             <View style={styles.back}>
               <Icon name="menu" group="mingcute-tiny-bold-filled" />
@@ -323,12 +320,12 @@ export default function Stopwatch({ getList }) {
                   <Text
                     style={{
                       fontFamily: "Nexa",
-                      fontSize: 24,
+                      fontSize: 22,
                       color: "#FFF",
-                      fontFamily: "Gratina",
+                      fontFamily: "Butler",
                     }}
                   >
-                    Colorodo
+                    Color Wheel
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -760,9 +757,10 @@ const modalstyles = StyleSheet.create({
   },
   colorodobutton: {
     padding: 30,
-    paddingHorizontal: 130,
+    paddingHorizontal: 90,
     backgroundColor: "#00F",
     alignSelf: "center",
+    alignItems: 'center',
     justifyContent: "center",
     borderRadius: 30,
     marginTop: 20,

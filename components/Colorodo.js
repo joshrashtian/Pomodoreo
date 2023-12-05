@@ -69,7 +69,7 @@ export default function Colorodo({ onSumbit, onNewColor }) {
 
   return (
     <View>
-      <Text style={styles.title}>Colorodo</Text>
+      <Text style={styles.title}>Color Wheel</Text>
       <View style={{ backgroundColor: "#ffffff" }}>
         <View
           style={{
